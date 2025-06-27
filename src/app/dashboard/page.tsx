@@ -204,10 +204,19 @@ export default function Dashboard() {
 
                     {/* Quick Actions */}
                     <div className="flex items-center space-x-2">
-                      <Button size="sm" variant="outline" className="flex-1">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Manage
-                      </Button>
+                      {org.role === 'owner' ? (
+                        <Link href={`/dashboard/organizations/${org.id}/profile`} className="flex-1">
+                          <Button size="sm" variant="outline" className="w-full">
+                            <Settings className="w-4 h-4 mr-2" />
+                            Manage
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button size="sm" variant="outline" className="flex-1" disabled>
+                          <Settings className="w-4 h-4 mr-2" />
+                          View Only
+                        </Button>
+                      )}
                       <Button size="sm" variant="outline" asChild>
                         <a 
                           href={`https://${org.subdomain}.myticketingsysem.site`}

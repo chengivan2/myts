@@ -36,26 +36,88 @@ export default function OnboardingStep5() {
 
   const uploadLogo = async (file: File, orgId: string): Promise<string | null> => {
     try {
-      const fileExt = file.name.split('.').pop()
+      console.log('Starting logo upload for org:', orgId, 'file:', file.name, 'size:', file.size)
+      
+      // Validate file
+      if (!file || file.size === 0) {
+        console.error('Invalid file provided')
+        return null
+      }
+
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        console.error('File too large:', file.size)
+        toast.error('Logo file must be smaller than 5MB')
+        return null
+      }
+
+      // Check file type
+      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp']
+      if (!validTypes.includes(file.type)) {
+        console.error('Invalid file type:', file.type)
+        toast.error('Logo must be a PNG, JPEG, GIF, or WebP image')
+        return null
+      }
+
+      const fileExt = file.name.split('.').pop() || 'png'
       const fileName = `${orgId}.${fileExt}`
       const filePath = fileName
 
-      const { error: uploadError } = await supabase.storage
+      console.log('Uploading to path:', filePath)
+
+      // First, check if bucket exists and list buckets for debugging
+      const { data: buckets, error: bucketListError } = await supabase.storage.listBuckets()
+      if (bucketListError) {
+        console.error('Error listing buckets:', bucketListError)
+      } else {
+        console.log('Available buckets:', buckets?.map(b => b.name))
+      }
+
+      // Check if organization-logos bucket exists
+      const bucketExists = buckets?.some(b => b.name === 'organization-logos')
+      if (!bucketExists) {
+        console.error('organization-logos bucket does not exist!')
+        toast.error('Storage bucket not configured. Please contact support.')
+        return null
+      }
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('organization-logos')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
         })
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error('Upload error details:', uploadError)
+        toast.error(`Upload failed: ${uploadError.message}`)
+        throw uploadError
+      }
+
+      console.log('Upload successful:', uploadData)
 
       const { data: { publicUrl } } = supabase.storage
         .from('organization-logos')
         .getPublicUrl(filePath)
 
+      console.log('Generated public URL:', publicUrl)
+
+      // Test if the URL is accessible
+      try {
+        const testResponse = await fetch(publicUrl, { method: 'HEAD' })
+        if (!testResponse.ok) {
+          console.warn('Public URL not immediately accessible, status:', testResponse.status)
+        } else {
+          console.log('Public URL confirmed accessible')
+        }
+      } catch (testError) {
+        console.warn('Could not test public URL accessibility:', testError)
+      }
+
       return publicUrl
     } catch (error) {
       console.error('Error uploading logo:', error)
+      toast.error('Failed to upload logo. Please try again.')
       return null
     }
   }
