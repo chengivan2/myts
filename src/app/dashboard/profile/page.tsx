@@ -177,21 +177,7 @@ function OrganizationProfileContent() {
       const fileExt = file.name.split('.').pop() || 'png'
       const fileName = `${organization?.id}.${fileExt}`
       
-      // Check if bucket exists
-      const { data: buckets, error: bucketListError } = await supabase.storage.listBuckets()
-      if (bucketListError) {
-        console.error('Error listing buckets:', bucketListError)
-        toast.error('Storage configuration error')
-        return null
-      }
-
-      const bucketExists = buckets?.some(b => b.name === 'organization-logos')
-      if (!bucketExists) {
-        console.error('organization-logos bucket does not exist!')
-        toast.error('Storage bucket not configured. Please contact support.')
-        return null
-      }
-
+      // Upload directly to bucket - Supabase will handle errors
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('organization-logos')
         .upload(fileName, file, {
