@@ -15,9 +15,5 @@
         }
       ]
     }
-  ],
-  "domains": [
-    "myticketingsysem.site",
-    "*.myticketingsysem.site"
   ]
 }
