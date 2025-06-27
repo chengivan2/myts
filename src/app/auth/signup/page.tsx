@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
-export default function SignUp() {
+function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -208,6 +208,31 @@ export default function SignUp() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+// Loading fallback component
+function SignUpLoading() {
+  return (
+    <div className="min-h-screen mesh-bg flex items-center justify-center p-4">
+      <div className="absolute inset-0 mesh-bg-blue" />
+      <div className="relative w-full max-w-md">
+        <div className="glass-card p-8 rounded-3xl">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="text-sm text-muted-foreground">Loading sign up...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function SignUp() {
+  return (
+    <Suspense fallback={<SignUpLoading />}>
+      <SignUpForm />
+    </Suspense>
   );
 }
 

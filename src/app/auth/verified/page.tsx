@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { CheckCircle, ArrowRight, Building2, User } from "lucide-react";
 
-export default function Verified() {
+function VerifiedPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -189,5 +189,30 @@ export default function Verified() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+// Loading fallback component
+function VerifiedLoading() {
+  return (
+    <div className="min-h-screen mesh-bg flex items-center justify-center p-4">
+      <div className="absolute inset-0 mesh-bg-blue" />
+      <div className="relative w-full max-w-md">
+        <div className="glass-card p-8 rounded-3xl">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="text-sm text-muted-foreground">Loading verification...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Verified() {
+  return (
+    <Suspense fallback={<VerifiedLoading />}>
+      <VerifiedPage />
+    </Suspense>
   );
 }
