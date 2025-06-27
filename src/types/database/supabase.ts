@@ -112,6 +112,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          logo_url: string | null
           name: string
           profile: Json | null
           subdomain: string
@@ -120,6 +121,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          logo_url?: string | null
           name: string
           profile?: Json | null
           subdomain: string
@@ -128,6 +130,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
           profile?: Json | null
           subdomain?: string
@@ -227,6 +230,7 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
+          logo_url: string | null
           updated_at: string | null
         }
         Insert: {
@@ -234,6 +238,7 @@ export type Database = {
           email: string
           full_name?: string | null
           id: string
+          logo_url?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -241,6 +246,7 @@ export type Database = {
           email?: string
           full_name?: string | null
           id?: string
+          logo_url?: string | null
           updated_at?: string | null
         }
         Relationships: []
