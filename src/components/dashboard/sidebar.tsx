@@ -114,9 +114,9 @@ export function DashboardSidebar() {
   }
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full w-full overflow-hidden">
-      {/* Header */}
-      <div className="p-6 border-b border-border/50">
+    <div className="flex flex-col h-full w-full">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 p-6 border-b border-border/50">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -133,6 +133,10 @@ export function DashboardSidebar() {
           </Button>
         </div>
       </div>
+
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="flex flex-col h-full">
 
       {/* Organization Selector */}
       {organizations.length > 0 && (
@@ -236,31 +240,33 @@ export function DashboardSidebar() {
         </div>
       </nav>
 
-      {/* User Section */}
-      <div className="p-4 border-t border-border/50">
-        <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/30">
-          <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-            <UserCircle className="h-4 w-4 text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {user?.user_metadata?.full_name || user?.email || 'User'}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user?.email}
-            </p>
+          {/* User Section - At bottom of scrollable area */}
+          <div className="mt-auto p-4 border-t border-border/50">
+            <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/30">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                <UserCircle className="h-4 w-4 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">
+                  {user?.user_metadata?.full_name || user?.email || 'User'}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user?.email}
+                </p>
+              </div>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="w-full mt-2 justify-start text-muted-foreground hover:text-foreground"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
           </div>
         </div>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleSignOut}
-          className="w-full mt-2 justify-start text-muted-foreground hover:text-foreground"
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          Sign Out
-        </Button>
       </div>
     </div>
   )
