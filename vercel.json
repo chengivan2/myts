@@ -1,0 +1,23 @@
+{
+  "functions": {
+    "src/app/**/*.ts": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/subdomain-handler?path=$1",
+      "has": [
+        {
+          "type": "host",
+          "value": "(?<subdomain>.*).myticketingsysem.site"
+        }
+      ]
+    }
+  ],
+  "domains": [
+    "myticketingsysem.site",
+    "*.myticketingsysem.site"
+  ]
+}
