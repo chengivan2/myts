@@ -205,7 +205,7 @@ export default function Dashboard() {
                     {/* Quick Actions */}
                     <div className="flex items-center space-x-2">
                       {org.role === 'owner' ? (
-                        <Link href={`/dashboard/organizations/${org.id}/profile`} className="flex-1">
+                        <Link href={`/dashboard/profile?org=${org.id}`} className="flex-1">
                           <Button size="sm" variant="outline" className="w-full">
                             <Settings className="w-4 h-4 mr-2" />
                             Manage

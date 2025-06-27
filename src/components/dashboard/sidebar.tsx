@@ -185,7 +185,7 @@ export function DashboardSidebar() {
                 </Button>
               </Link>
               {selectedOrg && selectedOrg.role === 'owner' && (
-                <Link href={`/dashboard/organizations/${selectedOrg.id}/profile`} className="flex-1">
+                <Link href={`/dashboard/profile?org=${selectedOrg.id}`} className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     <Settings className="h-3 w-3 mr-1" />
                     Manage
