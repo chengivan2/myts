@@ -1,20 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner"
+import { ThemeProvider } from "next-themes";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "My Ticketing System",
-  description: "The best ticketing system for all companies",
+  title: "TicketFlow - Modern Multi-Tenant Ticketing System",
+  description: "Streamline customer support with our enterprise-grade, multi-tenant ticketing system. Built for modern organizations with advanced analytics, role-based access, and seamless integrations.",
+  keywords: ["ticketing system", "customer support", "multi-tenant", "enterprise", "help desk"],
+  authors: [{ name: "TicketFlow Team" }],
+  openGraph: {
+    title: "TicketFlow - Modern Solutions for Customer Engagement",
+    description: "Highly customizable components for building modern customer support experiences.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -25,9 +29,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} antialiased font-sans`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
