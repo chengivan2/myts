@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { createClient } from "@/utils/supabase/client"
@@ -40,7 +40,7 @@ interface OrganizationDomain {
   domain: string
 }
 
-export default function OrganizationProfile() {
+function OrganizationProfileContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const organizationId = searchParams.get('org') // Optional org param
@@ -582,5 +582,21 @@ export default function OrganizationProfile() {
         </div>
       </div>
     </div>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-96">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
+  )
+}
+
+export default function OrganizationProfile() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <OrganizationProfileContent />
+    </Suspense>
   )
 }
