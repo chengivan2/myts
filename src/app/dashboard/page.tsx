@@ -183,20 +183,20 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     {/* Organization Header */}
                     <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white font-bold">
+                      <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
+                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
                           {org.name.charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-lg">{org.name}</h3>
-                          <p className="text-sm text-muted-foreground">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-lg truncate" title={org.name}>{org.name}</h3>
+                          <p className="text-sm text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>
                             {org.subdomain}.myticketingsysem.site
                           </p>
                         </div>
                       </div>
                       
                       {/* Role Badge */}
-                      <Badge variant={org.role === 'owner' ? 'default' : 'secondary'}>
+                      <Badge variant={org.role === 'owner' ? 'default' : 'secondary'} className="flex-shrink-0">
                         {org.role === 'owner' && <Crown className="w-3 h-3 mr-1" />}
                         {org.role}
                       </Badge>

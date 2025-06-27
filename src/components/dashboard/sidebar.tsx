@@ -152,18 +152,18 @@ export function DashboardSidebar() {
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium">
+                    <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
                         {org.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium truncate">{org.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="font-medium truncate" title={org.name}>{org.name}</p>
+                        <p className="text-xs text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>
                           {org.subdomain}.myticketingsysem.site
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1 flex-shrink-0">
                       {org.role === 'owner' && (
                         <Crown className="h-3 w-3 text-yellow-500" />
                       )}
