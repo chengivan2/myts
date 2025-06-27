@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,10 @@ export default function Verified() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Check if they were trying to access onboarding before signup
+  const redirectTo = searchParams.get("redirect");
 
   useEffect(() => {
     const checkUser = async () => {
@@ -49,8 +53,12 @@ export default function Verified() {
   }, [router]);
 
   const handleContinue = () => {
-    // You can redirect to onboarding or dashboard
-    router.push("/onboarding");
+    // If they came from onboarding, send them back there, otherwise default to onboarding
+    if (redirectTo === "/onboarding") {
+      router.push("/onboarding");
+    } else {
+      router.push("/onboarding");
+    }
   };
 
   const handleSkipForNow = () => {

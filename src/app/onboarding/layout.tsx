@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
+import { AuthGuard } from "@/components/auth-guard";
 
 export const metadata: Metadata = {
   title: "Organization Setup - TicketFlow",
@@ -13,16 +14,18 @@ export default function OnboardingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <OnboardingProvider>
-      <div className="min-h-screen mesh-bg">
-        {/* Background */}
-        <div className="absolute inset-0 mesh-bg-blue" />
-        
-        {/* Content */}
-        <div className="relative z-10">
-          {children}
+    <AuthGuard redirectTo="/onboarding">
+      <OnboardingProvider>
+        <div className="min-h-screen mesh-bg">
+          {/* Background */}
+          <div className="absolute inset-0 mesh-bg-blue" />
+          
+          {/* Content */}
+          <div className="relative z-10">
+            {children}
+          </div>
         </div>
-      </div>
-    </OnboardingProvider>
+      </OnboardingProvider>
+    </AuthGuard>
   );
 }

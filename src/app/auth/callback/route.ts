@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/auth/verified'
+  const redirect = searchParams.get('redirect') // Where they were trying to go before signup
 
   if (code) {
     const supabase = await createClient()
@@ -16,12 +17,15 @@ export async function GET(request: NextRequest) {
         const forwardedHost = request.headers.get('x-forwarded-host')
         const isLocalEnv = process.env.NODE_ENV === 'development'
         
+        // Include redirect parameter in the verified page URL if it exists
+        const nextUrl = redirect ? `${next}?redirect=${encodeURIComponent(redirect)}` : next
+        
         if (isLocalEnv) {
-          return NextResponse.redirect(`${origin}${next}`)
+          return NextResponse.redirect(`${origin}${nextUrl}`)
         } else if (forwardedHost) {
-          return NextResponse.redirect(`https://${forwardedHost}${next}`)
+          return NextResponse.redirect(`https://${forwardedHost}${nextUrl}`)
         } else {
-          return NextResponse.redirect(`${origin}${next}`)
+          return NextResponse.redirect(`${origin}${nextUrl}`)
         }
       }
     } catch (error) {
