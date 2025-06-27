@@ -94,51 +94,76 @@ export default function OnboardingStep5() {
         }
       }
 
-      // Create organization
-      const { data: orgData, error: orgError } = await supabase
-        .from('organizations')
-        .insert({
-          name: onboardingData.organizationName,
-          subdomain: onboardingData.subdomain,
-          profile: organizationProfile,
-          logo_url: null // Will be updated after logo upload
-        })
-        .select()
-        .single()
+      let orgData: any
+      let orgId: string
 
-      if (orgError) throw orgError
+      try {
+        // Try using the atomic helper function first (recommended approach)
+        const { data: atomicResult, error: atomicError } = await supabase
+          .rpc('create_organization_with_owner', {
+            org_name: onboardingData.organizationName,
+            org_subdomain: onboardingData.subdomain,
+            org_profile: organizationProfile,
+            org_logo_url: null,
+            owner_user_id: user.id
+          })
+        
+        if (atomicError) throw atomicError
+        
+        orgId = atomicResult.organization_id
+        orgData = { id: orgId }
+      } catch (atomicFunctionError) {
+        console.log('Atomic function failed, falling back to manual approach:', atomicFunctionError)
+        
+        // Fallback to manual approach
+        const { data: manualOrgData, error: orgError } = await supabase
+          .from('organizations')
+          .insert({
+            name: onboardingData.organizationName,
+            subdomain: onboardingData.subdomain,
+            profile: organizationProfile,
+            logo_url: null // Will be updated after logo upload
+          })
+          .select()
+          .single()
+
+        if (orgError) throw orgError
+        
+        orgData = manualOrgData
+        orgId = orgData.id
+
+        // Create organization membership for the creator
+        const { error: membershipError } = await supabase
+          .from('organization_members')
+          .insert({
+            organization_id: orgData.id,
+            user_id: user.id,
+            role: 'owner'
+          })
+
+        if (membershipError) throw membershipError
+      }
 
       // Upload logo if provided
       let logoUrl = null
       if (onboardingData.logo) {
-        logoUrl = await uploadLogo(onboardingData.logo, orgData.id)
+        logoUrl = await uploadLogo(onboardingData.logo, orgId)
         
         if (logoUrl) {
           // Update organization with logo URL
           const { error: updateError } = await supabase
             .from('organizations')
             .update({ logo_url: logoUrl })
-            .eq('id', orgData.id)
+            .eq('id', orgId)
 
           if (updateError) throw updateError
         }
       }
 
-      // Create organization membership for the creator
-      const { error: membershipError } = await supabase
-        .from('organization_members')
-        .insert({
-          organization_id: orgData.id,
-          user_id: user.id,
-          role: 'owner'
-        })
-
-      if (membershipError) throw membershipError
-
       // Insert allowed domains
       if (onboardingData.allowedDomains.length > 0) {
         const domainInserts = onboardingData.allowedDomains.map(domain => ({
-          organization_id: orgData.id,
+          organization_id: orgId,
           domain: domain
         }))
 
