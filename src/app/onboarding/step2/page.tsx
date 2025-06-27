@@ -82,39 +82,43 @@ export default function OnboardingStep2() {
     try {
       const supabase = createClient()
       
+      // Use the database function to check availability
       const { data, error } = await supabase
-        .from('organizations')
-        .select('subdomain')
-        .eq('subdomain', subdomain.toLowerCase())
-        .maybeSingle()
+        .rpc('check_subdomain_availability', { 
+          subdomain_input: subdomain.toLowerCase() 
+        })
 
       if (error) {
+        console.error('Supabase RPC error:', error)
         setSubdomainStatus({
           available: null,
           checking: false,
-          message: "Error checking availability"
+          message: `Error checking availability: ${error.message}`
         })
         return
       }
 
-      if (data) {
+      if (data && typeof data === 'object' && 'available' in data) {
         setSubdomainStatus({
-          available: false,
+          available: data.available,
           checking: false,
-          message: "This subdomain is already taken"
+          message: data.available 
+            ? "This subdomain is available!" 
+            : "This subdomain is already taken"
         })
       } else {
         setSubdomainStatus({
-          available: true,
+          available: null,
           checking: false,
-          message: "This subdomain is available!"
+          message: "Unexpected response format"
         })
       }
     } catch (error) {
+      console.error('Client error:', error)
       setSubdomainStatus({
         available: null,
         checking: false,
-        message: "Error checking availability"
+        message: `Connection error: ${error instanceof Error ? error.message : 'Unknown error'}`
       })
     }
   }

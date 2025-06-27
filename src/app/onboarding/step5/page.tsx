@@ -72,14 +72,13 @@ export default function OnboardingStep5() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('User not authenticated')
 
-      // Check if subdomain is still available
-      const { data: existingOrg } = await supabase
-        .from('organizations')
-        .select('id')
-        .eq('subdomain', onboardingData.subdomain)
-        .single()
+      // Check if subdomain is still available using RPC function
+      const { data: availabilityCheck, error: checkError } = await supabase
+        .rpc('check_subdomain_availability', { 
+          subdomain_input: onboardingData.subdomain 
+        })
 
-      if (existingOrg) {
+      if (checkError || !availabilityCheck?.available) {
         toast.error('Subdomain is no longer available. Please choose another.')
         setCreating(false)
         return
