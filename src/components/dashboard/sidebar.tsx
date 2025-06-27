@@ -114,7 +114,7 @@ export function DashboardSidebar() {
   }
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full overflow-hidden">
       {/* Header */}
       <div className="p-6 border-b border-border/50">
         <div className="flex items-center justify-between">
@@ -136,16 +136,16 @@ export function DashboardSidebar() {
 
       {/* Organization Selector */}
       {organizations.length > 0 && (
-        <div className="p-4 border-b border-border/50">
-          <div className="space-y-2">
+        <div className="p-4 border-b border-border/50 w-full overflow-hidden">
+          <div className="space-y-2 w-full max-w-full">
             <p className="text-xs text-muted-foreground uppercase tracking-wider">Current Organization</p>
-            <div className="space-y-1">
+            <div className="space-y-1 w-full max-w-full">
               {organizations.map((org) => (
                 <button
                   key={org.id}
                   onClick={() => setSelectedOrg(org)}
                   className={cn(
-                    "w-full text-left p-3 rounded-lg transition-colors group",
+                    "w-full text-left p-3 rounded-lg transition-colors group overflow-hidden",
                     selectedOrg?.id === org.id 
                       ? "bg-primary/10 border border-primary/20" 
                       : "hover:bg-muted/50"
@@ -177,18 +177,18 @@ export function DashboardSidebar() {
             </div>
             
             {/* Organization Actions */}
-            <div className="flex space-x-2 pt-2">
-              <Link href="/onboarding" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <Plus className="h-3 w-3 mr-1" />
-                  New Org
+            <div className="flex space-x-2 pt-2 w-full">
+              <Link href="/onboarding" className="flex-1 min-w-0">
+                <Button variant="outline" size="sm" className="w-full text-xs">
+                  <Plus className="h-3 w-3 mr-1 flex-shrink-0" />
+                  <span className="truncate">New Org</span>
                 </Button>
               </Link>
               {selectedOrg && selectedOrg.role === 'owner' && (
-                <Link href={`/dashboard/profile?org=${selectedOrg.id}`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Settings className="h-3 w-3 mr-1" />
-                    Manage
+                <Link href={`/dashboard/profile?org=${selectedOrg.id}`} className="flex-1 min-w-0">
+                  <Button variant="outline" size="sm" className="w-full text-xs">
+                    <Settings className="h-3 w-3 mr-1 flex-shrink-0" />
+                    <span className="truncate">Manage</span>
                   </Button>
                 </Link>
               )}
@@ -278,7 +278,7 @@ export function DashboardSidebar() {
       </Button>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-card/50 backdrop-blur-md border-r border-border/50 z-40">
+      <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-64 bg-card/50 backdrop-blur-md border-r border-border/50 z-40 overflow-hidden">
         <SidebarContent />
       </aside>
 
