@@ -172,6 +172,11 @@ export default function OnboardingStep5() {
         
         if (atomicError) throw atomicError
         
+        // Check if the function call was successful
+        if (!atomicResult?.success) {
+          throw new Error(atomicResult?.message || 'Failed to create organization')
+        }
+        
         orgId = atomicResult.organization_id
         orgData = { id: orgId }
       } catch (atomicFunctionError) {
