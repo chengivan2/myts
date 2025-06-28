@@ -39,21 +39,21 @@ export type Database = {
           created_at: string | null
           domain: string
           id: string
-          organization_id: string | null
+          organization_id: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           domain: string
           id?: string
-          organization_id?: string | null
+          organization_id: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           domain?: string
           id?: string
-          organization_id?: string | null
+          organization_id?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -70,26 +70,26 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
-          organization_id: string | null
-          role: string
+          organization_id: string
+          role: Database["public"]["Enums"]["user_role_enum"]
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          organization_id?: string | null
-          role: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["user_role_enum"]
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          organization_id?: string | null
-          role?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["user_role_enum"]
           updated_at?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -104,6 +104,50 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_sla_settings: {
+        Row: {
+          business_hours_only: boolean | null
+          created_at: string | null
+          first_response_hours: number | null
+          id: string
+          is_active: boolean | null
+          organization_id: string
+          priority: Database["public"]["Enums"]["ticket_priority_enum"]
+          resolution_hours: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          business_hours_only?: boolean | null
+          created_at?: string | null
+          first_response_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          organization_id: string
+          priority: Database["public"]["Enums"]["ticket_priority_enum"]
+          resolution_hours?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          business_hours_only?: boolean | null
+          created_at?: string | null
+          first_response_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          organization_id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority_enum"]
+          resolution_hours?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_sla_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -138,30 +182,204 @@ export type Database = {
         }
         Relationships: []
       }
-      ticket_responses: {
+      ticket_activities: {
+        Row: {
+          activity_type: Database["public"]["Enums"]["activity_type_enum"]
+          created_at: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          new_value: Json | null
+          old_value: Json | null
+          ticket_id: string
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: Database["public"]["Enums"]["activity_type_enum"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          ticket_id: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: Database["public"]["Enums"]["activity_type_enum"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: Json | null
+          old_value?: Json | null
+          ticket_id?: string
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_activities_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_attachments: {
         Row: {
           created_at: string | null
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
           id: string
-          response_text: string
+          response_id: string | null
+          thumbnail_url: string | null
           ticket_id: string | null
-          updated_at: string | null
-          user_email: string
+          uploaded_by_email: string | null
+          uploaded_by_user_id: string | null
         }
         Insert: {
           created_at?: string | null
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
           id?: string
-          response_text: string
+          response_id?: string | null
+          thumbnail_url?: string | null
           ticket_id?: string | null
-          updated_at?: string | null
-          user_email: string
+          uploaded_by_email?: string | null
+          uploaded_by_user_id?: string | null
         }
         Update: {
           created_at?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
           id?: string
-          response_text?: string
+          response_id?: string | null
+          thumbnail_url?: string | null
           ticket_id?: string | null
+          uploaded_by_email?: string | null
+          uploaded_by_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_attachments_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_responses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_attachments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_attachments_uploaded_by_user_id_fkey"
+            columns: ["uploaded_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          organization_id: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          organization_id: string
+          sort_order?: number | null
           updated_at?: string | null
-          user_email?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          organization_id?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_categories_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_responses: {
+        Row: {
+          attachments: Json | null
+          created_at: string | null
+          id: string
+          is_internal: boolean | null
+          response_text: string
+          response_type: string | null
+          ticket_id: string
+          updated_at: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attachments?: Json | null
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          response_text: string
+          response_type?: string | null
+          ticket_id: string
+          updated_at?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attachments?: Json | null
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          response_text?: string
+          response_type?: string | null
+          ticket_id?: string
+          updated_at?: string | null
+          user_email?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -172,49 +390,185 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ticket_responses_ticket_id_fkey"
+            foreignKeyName: "ticket_responses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_slas: {
+        Row: {
+          actual_time: string | null
+          breach_duration: unknown | null
+          created_at: string | null
+          id: string
+          is_breached: boolean | null
+          notification_sent: boolean | null
+          sla_type: string
+          target_time: string
+          ticket_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_time?: string | null
+          breach_duration?: unknown | null
+          created_at?: string | null
+          id?: string
+          is_breached?: boolean | null
+          notification_sent?: boolean | null
+          sla_type: string
+          target_time: string
+          ticket_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_time?: string | null
+          breach_duration?: unknown | null
+          created_at?: string | null
+          id?: string
+          is_breached?: boolean | null
+          notification_sent?: boolean | null
+          sla_type?: string
+          target_time?: string
+          ticket_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_slas_ticket_id_fkey"
             columns: ["ticket_id"]
             isOneToOne: false
-            referencedRelation: "tickets_public"
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_tags: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          tag_color: string | null
+          tag_name: string
+          ticket_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          tag_color?: string | null
+          tag_name: string
+          ticket_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          tag_color?: string | null
+          tag_name?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_tags_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
             referencedColumns: ["id"]
           },
         ]
       }
       tickets: {
         Row: {
+          assigned_to: string | null
+          category_id: string | null
+          closed_at: string | null
           created_at: string | null
+          customer_satisfaction: number | null
           description: string | null
+          due_date: string | null
+          first_response_at: string | null
           id: string
-          organization_id: string | null
-          status: string | null
+          organization_id: string
+          priority: Database["public"]["Enums"]["ticket_priority_enum"] | null
+          reference_id: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          source: Database["public"]["Enums"]["ticket_source_enum"] | null
+          status: Database["public"]["Enums"]["ticket_status_enum"] | null
           subject: string
-          ticket_id: string
+          tags: string[] | null
           updated_at: string | null
           user_email: string
         }
         Insert: {
+          assigned_to?: string | null
+          category_id?: string | null
+          closed_at?: string | null
           created_at?: string | null
+          customer_satisfaction?: number | null
           description?: string | null
+          due_date?: string | null
+          first_response_at?: string | null
           id?: string
-          organization_id?: string | null
-          status?: string | null
+          organization_id: string
+          priority?: Database["public"]["Enums"]["ticket_priority_enum"] | null
+          reference_id: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          source?: Database["public"]["Enums"]["ticket_source_enum"] | null
+          status?: Database["public"]["Enums"]["ticket_status_enum"] | null
           subject: string
-          ticket_id: string
+          tags?: string[] | null
           updated_at?: string | null
           user_email: string
         }
         Update: {
+          assigned_to?: string | null
+          category_id?: string | null
+          closed_at?: string | null
           created_at?: string | null
+          customer_satisfaction?: number | null
           description?: string | null
+          due_date?: string | null
+          first_response_at?: string | null
           id?: string
-          organization_id?: string | null
-          status?: string | null
+          organization_id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority_enum"] | null
+          reference_id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          source?: Database["public"]["Enums"]["ticket_source_enum"] | null
+          status?: Database["public"]["Enums"]["ticket_status_enum"] | null
           subject?: string
-          ticket_id?: string
+          tags?: string[] | null
           updated_at?: string | null
           user_email?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tickets_organization_id_fkey"
             columns: ["organization_id"]
@@ -226,76 +580,73 @@ export type Database = {
       }
       users: {
         Row: {
+          avatar_url: string | null
           created_at: string | null
           email: string
           full_name: string | null
           id: string
-          logo_url: string | null
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
           email: string
           full_name?: string | null
           id: string
-          logo_url?: string | null
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string
           full_name?: string | null
           id?: string
-          logo_url?: string | null
           updated_at?: string | null
         }
         Relationships: []
       }
     }
     Views: {
-      tickets_public: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          status: string | null
-          subject: string | null
-          ticket_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string | null
-          status?: string | null
-          subject?: string | null
-          ticket_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string | null
-          status?: string | null
-          subject?: string | null
-          ticket_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      generate_ticket_id: {
+      generate_ticket_reference_id: {
         Args: { org_id: string }
         Returns: string
       }
-      get_public_ticket: {
-        Args: { ticket_id_text: string }
-        Returns: {
-          id: string
-          ticket_id: string
-          subject: string
-          status: string
-          created_at: string
-        }[]
-      }
     }
     Enums: {
-      [_ in never]: never
+      activity_type_enum:
+        | "created"
+        | "assigned"
+        | "unassigned"
+        | "status_changed"
+        | "priority_changed"
+        | "commented"
+        | "resolved"
+        | "closed"
+        | "reopened"
+        | "tagged"
+        | "categorized"
+        | "note_added"
+        | "attachment_added"
+      ticket_priority_enum: "low" | "normal" | "high" | "urgent" | "critical"
+      ticket_source_enum:
+        | "portal"
+        | "email"
+        | "chat"
+        | "phone"
+        | "api"
+        | "widget"
+      ticket_status_enum:
+        | "new"
+        | "open"
+        | "pending"
+        | "in_progress"
+        | "resolved"
+        | "closed"
+        | "on_hold"
+      user_role_enum: "owner" | "admin" | "agent" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -413,6 +764,34 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      activity_type_enum: [
+        "created",
+        "assigned",
+        "unassigned",
+        "status_changed",
+        "priority_changed",
+        "commented",
+        "resolved",
+        "closed",
+        "reopened",
+        "tagged",
+        "categorized",
+        "note_added",
+        "attachment_added",
+      ],
+      ticket_priority_enum: ["low", "normal", "high", "urgent", "critical"],
+      ticket_source_enum: ["portal", "email", "chat", "phone", "api", "widget"],
+      ticket_status_enum: [
+        "new",
+        "open",
+        "pending",
+        "in_progress",
+        "resolved",
+        "closed",
+        "on_hold",
+      ],
+      user_role_enum: ["owner", "admin", "agent", "member"],
+    },
   },
 } as const
