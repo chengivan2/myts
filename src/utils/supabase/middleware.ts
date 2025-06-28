@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getSubdomain, isRootDomain, getOrganizationFromSubdomain } from "@/lib/subdomain";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({

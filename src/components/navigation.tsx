@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
+import { Menu, X, LayoutDashboard } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { createClient } from "@/utils/supabase/client"
 
 const navItems = [
   { name: "Features", href: "#features" },
@@ -17,6 +18,8 @@ const navItems = [
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +28,27 @@ export function Navigation() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const supabase = createClient()
+    
+    // Get initial user
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
+    
+    getUser()
+    
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+    
+    return () => subscription.unsubscribe()
   }, [])
 
   return (
@@ -63,16 +87,29 @@ export function Navigation() {
 
         {/* Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link href="/auth/signin">
-            <Button variant="ghost" size="sm" className="text-sm">
-              Login
-            </Button>
-          </Link>
-          <Link href="/auth/signup">
-            <Button size="sm" className="text-sm">
-              Sign Up
-            </Button>
-          </Link>
+          {loading ? (
+            <div className="w-20 h-8 bg-muted/50 rounded-md animate-pulse" />
+          ) : user ? (
+            <Link href="/dashboard">
+              <Button size="sm" className="text-sm flex items-center gap-2">
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/auth/signin">
+                <Button variant="ghost" size="sm" className="text-sm">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button size="sm" className="text-sm">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -107,16 +144,29 @@ export function Navigation() {
                 </Link>
               ))}
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                <Link href="/auth/signin">
-                  <Button variant="ghost" size="sm" className="text-sm w-full">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/auth/signup">
-                  <Button size="sm" className="text-sm w-full">
-                    Sign Up
-                  </Button>
-                </Link>
+                {loading ? (
+                  <div className="w-full h-8 bg-muted/50 rounded-md animate-pulse" />
+                ) : user ? (
+                  <Link href="/dashboard">
+                    <Button size="sm" className="text-sm w-full flex items-center gap-2">
+                      <LayoutDashboard className="h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/auth/signin">
+                      <Button variant="ghost" size="sm" className="text-sm w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/auth/signup">
+                      <Button size="sm" className="text-sm w-full">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
