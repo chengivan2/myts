@@ -28,7 +28,7 @@ interface TeamMember {
     user_metadata: {
       full_name?: string
     }
-  }
+  }[]
 }
 
 interface Organization {
@@ -231,10 +231,10 @@ export default function TeamPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold">
-                        {member.users.user_metadata?.full_name || 'User'}
+                        {member.users[0]?.user_metadata?.full_name || 'User'}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        {member.users.email}
+                        {member.users[0]?.email}
                       </p>
                     </div>
                   </div>
