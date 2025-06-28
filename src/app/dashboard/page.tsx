@@ -17,6 +17,8 @@ import {
   Crown
 } from "lucide-react"
 import Link from "next/link"
+import { getSubdomain, getOrganizationFromSubdomain } from "@/lib/subdomain"
+import { OrganizationDashboard } from "@/components/dashboard/organization-dashboard"
 
 interface Organization {
   id: string
@@ -34,8 +36,17 @@ export default function Dashboard() {
   const [organizations, setOrganizations] = useState<UserOrganization[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
+  const [subdomain, setSubdomain] = useState<string | null>(null)
 
   useEffect(() => {
+    // Detect subdomain on client side
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname
+      const detectedSubdomain = getSubdomain(hostname)
+      const orgSubdomain = getOrganizationFromSubdomain(detectedSubdomain)
+      setSubdomain(orgSubdomain)
+    }
+
     const fetchUserAndOrganizations = async () => {
       const supabase = createClient()
       
@@ -95,6 +106,12 @@ export default function Dashboard() {
     )
   }
 
+  // If we're on a subdomain, show the organization-specific dashboard
+  if (subdomain) {
+    return <OrganizationDashboard subdomain={subdomain} />
+  }
+
+  // Otherwise, show the main dashboard with all organizations
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
