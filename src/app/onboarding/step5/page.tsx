@@ -30,6 +30,7 @@ const steps = [
 
 export default function OnboardingStep5() {
   const [creating, setCreating] = useState(false)
+  const [success, setSuccess] = useState(false)
   const router = useRouter()
   const supabase = createClient()
   const { data: onboardingData, resetData } = useOnboarding()
@@ -140,15 +141,23 @@ export default function OnboardingStep5() {
         if (domainsError) throw domainsError
       }
 
-      toast.success('Organization created successfully!')
+      // Show success state
+      setSuccess(true)
+      toast.success('🎉 Organization created successfully!')
       
       // Clear onboarding data
       resetData()
       
-      // Redirect to dashboard
+      // Redirect to organization subdomain dashboard
+      const orgSubdomain = onboardingData.subdomain
+      const dashboardUrl = `https://${orgSubdomain}.myticketingsysem.site/dashboard`
+      
       setTimeout(() => {
-        router.push('/dashboard')
-      }, 2000)
+        toast.success(`Redirecting to your organization dashboard...`, {
+          duration: 3000,
+        })
+        window.location.href = dashboardUrl
+      }, 3000)
 
     } catch (error) {
       console.error('Error creating organization:', error)
@@ -174,6 +183,56 @@ export default function OnboardingStep5() {
           <Button onClick={() => router.push('/onboarding/step1')}>
             Go to Step 1
           </Button>
+        </motion.div>
+      </div>
+    )
+  }
+
+  // Show success state if organization was created
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="w-full max-w-2xl text-center"
+        >
+          <div className="glass-card p-8 rounded-3xl">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <CheckCircle className="h-12 w-12 text-green-600 dark:text-green-400" />
+            </motion.div>
+            
+            <h1 className="text-3xl font-bold mb-4">
+              🎉 Organization Created Successfully!
+            </h1>
+            
+            <p className="text-lg text-muted-foreground mb-6">
+              <strong>{onboardingData.organizationName}</strong> has been created and is ready to use.
+            </p>
+            
+            <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-900 dark:text-blue-100 font-medium mb-1">
+                🌐 Your Organization Dashboard
+              </p>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                You'll be redirected to your organization dashboard in a moment:
+              </p>
+              <Badge variant="secondary" className="font-mono">
+                {onboardingData.subdomain}.myticketingsysem.site/dashboard
+              </Badge>
+            </div>
+            
+            <div className="flex items-center justify-center space-x-2 text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-sm">Redirecting in a moment...</span>
+            </div>
+          </div>
         </motion.div>
       </div>
     )
