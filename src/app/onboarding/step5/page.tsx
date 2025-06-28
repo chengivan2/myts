@@ -34,93 +34,6 @@ export default function OnboardingStep5() {
   const supabase = createClient()
   const { data: onboardingData, resetData } = useOnboarding()
 
-  const uploadLogo = async (file: File, orgId: string): Promise<string | null> => {
-    try {
-      console.log('Starting logo upload for org:', orgId, 'file:', file.name, 'size:', file.size)
-      
-      // Validate file
-      if (!file || file.size === 0) {
-        console.error('Invalid file provided')
-        return null
-      }
-
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        console.error('File too large:', file.size)
-        toast.error('Logo file must be smaller than 5MB')
-        return null
-      }
-
-      // Check file type
-      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp']
-      if (!validTypes.includes(file.type)) {
-        console.error('Invalid file type:', file.type)
-        toast.error('Logo must be a PNG, JPEG, GIF, or WebP image')
-        return null
-      }
-
-      const fileExt = file.name.split('.').pop() || 'png'
-      const fileName = `logo.${fileExt}`
-      const filePath = `${orgId}/${fileName}`
-
-      console.log('Uploading to path:', filePath)
-
-      // First, check if bucket exists and list buckets for debugging
-      const { data: buckets, error: bucketListError } = await supabase.storage.listBuckets()
-      if (bucketListError) {
-        console.error('Error listing buckets:', bucketListError)
-      } else {
-        console.log('Available buckets:', buckets?.map(b => b.name))
-      }
-
-      // Check if organization-logos bucket exists
-      const bucketExists = buckets?.some(b => b.name === 'organization-logos')
-      if (!bucketExists) {
-        console.error('organization-logos bucket does not exist!')
-        toast.error('Storage bucket not configured. Please contact support.')
-        return null
-      }
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('organization-logos')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        })
-
-      if (uploadError) {
-        console.error('Upload error details:', uploadError)
-        toast.error(`Upload failed: ${uploadError.message}`)
-        throw uploadError
-      }
-
-      console.log('Upload successful:', uploadData)
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('organization-logos')
-        .getPublicUrl(filePath)
-
-      console.log('Generated public URL:', publicUrl)
-
-      // Test if the URL is accessible
-      try {
-        const testResponse = await fetch(publicUrl, { method: 'HEAD' })
-        if (!testResponse.ok) {
-          console.warn('Public URL not immediately accessible, status:', testResponse.status)
-        } else {
-          console.log('Public URL confirmed accessible')
-        }
-      } catch (testError) {
-        console.warn('Could not test public URL accessibility:', testError)
-      }
-
-      return publicUrl
-    } catch (error) {
-      console.error('Error uploading logo:', error)
-      toast.error('Failed to upload logo. Please try again.')
-      return null
-    }
-  }
 
   const createOrganization = async () => {
     if (!onboardingData.organizationName || !onboardingData.subdomain) {
@@ -211,21 +124,7 @@ export default function OnboardingStep5() {
         if (membershipError) throw membershipError
       }
 
-      // Upload logo if provided
-      let logoUrl = null
-      if (onboardingData.logo) {
-        logoUrl = await uploadLogo(onboardingData.logo, orgId)
-        
-        if (logoUrl) {
-          // Update organization with logo URL
-          const { error: updateError } = await supabase
-            .from('organizations')
-            .update({ logo_url: logoUrl })
-            .eq('id', orgId)
-
-          if (updateError) throw updateError
-        }
-      }
+      // Note: Logo can be uploaded later from the organization profile page
 
       // Insert allowed domains
       if (onboardingData.allowedDomains.length > 0) {
@@ -395,41 +294,28 @@ export default function OnboardingStep5() {
               </div>
             )}
 
-            {/* Logo */}
+            {/* Logo Note */}
             <div className="glass rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center mb-4">
                 <h3 className="text-lg font-semibold flex items-center">
                   <ImageIcon className="h-5 w-5 mr-2 text-primary" />
                   Organization Logo
                 </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push("/onboarding/step4")}
-                  className="text-primary hover:text-primary"
-                >
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
               </div>
               
-              {onboardingData.logo ? (
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={URL.createObjectURL(onboardingData.logo)}
-                    alt="Organization logo"
-                    className="w-12 h-12 rounded-lg object-cover"
-                  />
-                  <div>
-                    <p className="font-medium">{onboardingData.logo.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {(onboardingData.logo.size / 1024).toFixed(1)} KB
-                    </p>
-                  </div>
+              <div className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex-shrink-0">
+                  <ImageIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                 </div>
-              ) : (
-                <p className="text-muted-foreground">No logo uploaded</p>
-              )}
+                <div>
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    Logo Upload Available After Creation
+                  </p>
+                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                    You can upload your organization logo from the organization profile page after creation.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Create Organization Button */}

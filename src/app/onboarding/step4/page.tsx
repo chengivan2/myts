@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,13 +9,13 @@ import { useOnboarding } from "@/contexts/onboarding-context";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { Upload, Image, X } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 const steps = [
   { id: 1, title: "Details", description: "Basic information" },
   { id: 2, title: "Subdomain", description: "Choose your subdomain" },
   { id: 3, title: "Domains", description: "Email domain setup" },
-  { id: 4, title: "Profile", description: "Branding and preferences" },
+  { id: 4, title: "Profile", description: "Welcome message" },
   { id: 5, title: "Review", description: "Confirm and create" },
 ];
 
@@ -23,11 +23,9 @@ export default function OnboardingStep4() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { data, updateData } = useOnboarding();
-  const [logo, setLogo] = useState<File | null>(data.logo);
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -35,31 +33,11 @@ export default function OnboardingStep4() {
     }
   });
 
-  // Update form values when data changes
-  useEffect(() => {
-    setValue('customMessage', data.customMessage);
-    setLogo(data.logo);
-  }, [data, setValue]);
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogo(file);
-      toast.success("Logo uploaded successfully!");
-    }
-  };
-
-  const removeLogo = () => {
-    setLogo(null);
-    toast.info("Logo removed");
-  };
-
   const onSubmit = (formData: any) => {
     setLoading(true);
 
-    // Update onboarding context (logo is optional)
+    // Update onboarding context
     updateData({
-      logo: logo,
       customMessage: formData.customMessage || '',
       currentStep: 5
     });
@@ -84,57 +62,18 @@ export default function OnboardingStep4() {
         <div className="glass-card p-8 rounded-3xl">
           <div className="text-center mb-8">
             <Badge variant="outline" className="glass-pill mb-4">
-              Step 4: Profile & Branding
+              Step 4: Welcome Message
             </Badge>
-            <h1 className="text-3xl font-bold">
-              Customize your organization's profile
+            <h1 className="text-3xl font-bold flex items-center justify-center">
+              <MessageSquare className="h-8 w-8 mr-3 text-primary" />
+              Set your welcome message
             </h1>
             <p className="text-muted-foreground">
-              Upload a logo and set branding preferences.
+              Create a custom welcome message for your support portal.
             </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Logo Upload Section */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-3">
-                  Organization Logo
-                </label>
-                {logo ? (
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={URL.createObjectURL(logo)}
-                      alt="Logo preview"
-                      className="w-24 h-24 object-cover rounded-full"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={removeLogo}
-                    >
-                      <X className="h-5 w-5" />
-                      Remove
-                    </Button>
-                  </div>
-                ) : (
-                  <label className="flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-white">
-                    <Upload className="h-8 w-8" />
-                    <span className="mt-2 text-base leading-normal">
-                      Select a logo file
-                    </span>
-                    <input
-                      type="file"
-                      className="hidden"
-                      onChange={handleLogoUpload}
-
-                    />
-                  </label>
-                )}
-              </div>
-
-            </div>
-
             {/* Custom Message */}
             <div>
               <label htmlFor="customMessage" className="block text-sm font-medium mb-2">
@@ -143,11 +82,21 @@ export default function OnboardingStep4() {
               <textarea
                 id="customMessage"
                 placeholder="Welcome to our support portal! We're here to help you with any questions or issues you may have."
-                className="w-full p-3 glass rounded-xl min-h-[100px]"
+                className="w-full p-3 glass rounded-xl min-h-[120px]"
                 {...register("customMessage")}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                This message will be displayed to customers when they visit your support portal
+                This message will be displayed to customers when they visit your support portal. You can always change this later.
+              </p>
+            </div>
+            
+            {/* Logo Note */}
+            <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-900 dark:text-blue-100 font-medium mb-1">
+                📸 Organization Logo
+              </p>
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                You can upload your organization logo after creation from the organization profile page.
               </p>
             </div>
 

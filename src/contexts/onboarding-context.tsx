@@ -13,9 +13,7 @@ export interface OnboardingData {
   // Step 3: Email Domains
   allowedDomains: string[]
   
-  // Step 4: Profile & Branding
-  logo: File | null
-  logoUrl: string | null
+  // Step 4: Welcome Message
   customMessage: string
   
   // Metadata
@@ -36,8 +34,6 @@ const defaultData: OnboardingData = {
   organizationDescription: '',
   subdomain: '',
   allowedDomains: [],
-  logo: null,
-  logoUrl: null,
   customMessage: '',
   currentStep: 1,
   isComplete: false,
@@ -58,10 +54,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   }
 
   const saveToStorage = () => {
-    const dataToSave = { ...data }
-    // Don't save File objects to localStorage
-    dataToSave.logo = null
-    localStorage.setItem('onboarding-data', JSON.stringify(dataToSave))
+    localStorage.setItem('onboarding-data', JSON.stringify(data))
   }
 
   const loadFromStorage = () => {
@@ -69,7 +62,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       const saved = localStorage.getItem('onboarding-data')
       if (saved) {
         const parsedData = JSON.parse(saved)
-        setData(prev => ({ ...prev, ...parsedData, logo: null }))
+        setData(prev => ({ ...prev, ...parsedData }))
       }
     } catch (error) {
       console.error('Error loading onboarding data:', error)
