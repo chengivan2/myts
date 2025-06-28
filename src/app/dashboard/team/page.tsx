@@ -96,7 +96,7 @@ export default function TeamPage() {
           id,
           role,
           joined_at,
-          users (
+          users!inner (
             id,
             email,
             user_metadata
