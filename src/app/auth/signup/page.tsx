@@ -20,6 +20,7 @@ function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const supabase = createClient();
   
   // Get the redirect parameter to preserve where they're going
   const redirectTo = searchParams.get("redirect");
@@ -40,7 +41,6 @@ function SignUpForm() {
 
     setLoading(true);
 
-    const supabase = createClient();
     const { error } = await supabase.auth.signUp({
       email,
       password,
