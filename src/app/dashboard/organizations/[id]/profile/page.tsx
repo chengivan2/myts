@@ -154,7 +154,8 @@ export default function OrganizationProfile() {
       }
 
       const fileExt = file.name.split('.').pop() || 'png'
-      const fileName = `${organizationId}.${fileExt}`
+      const fileName = `logo.${fileExt}`
+      const filePath = `${organizationId}/${fileName}`
       
       // Check if bucket exists
       const { data: buckets, error: bucketListError } = await supabase.storage.listBuckets()
@@ -173,7 +174,7 @@ export default function OrganizationProfile() {
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('organization-logos')
-        .upload(fileName, file, {
+        .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
         })
@@ -188,7 +189,7 @@ export default function OrganizationProfile() {
 
       const { data: { publicUrl } } = supabase.storage
         .from('organization-logos')
-        .getPublicUrl(fileName)
+        .getPublicUrl(filePath)
 
       console.log('Generated public URL:', publicUrl)
       return publicUrl

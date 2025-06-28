@@ -60,8 +60,8 @@ export default function OnboardingStep5() {
       }
 
       const fileExt = file.name.split('.').pop() || 'png'
-      const fileName = `${orgId}.${fileExt}`
-      const filePath = fileName
+      const fileName = `logo.${fileExt}`
+      const filePath = `${orgId}/${fileName}`
 
       console.log('Uploading to path:', filePath)
 
