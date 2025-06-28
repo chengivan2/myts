@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { ProfilePictureUpload } from "@/components/ui/profile-picture-upload"
 import { 
   Settings, 
   User,
@@ -25,7 +26,17 @@ interface UserProfile {
   email: string
   user_metadata: {
     full_name?: string
+    avatar_url?: string
   }
+}
+
+interface UserDBRecord {
+  id: string
+  email: string
+  full_name: string | null
+  avatar_url: string | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 interface UserPreferences {
@@ -37,6 +48,7 @@ interface UserPreferences {
 
 export default function SettingsPage() {
   const [user, setUser] = useState<UserProfile | null>(null)
+  const [userDbRecord, setUserDbRecord] = useState<UserDBRecord | null>(null)
   const [preferences, setPreferences] = useState<UserPreferences>({
     email_notifications: true,
     push_notifications: true,
@@ -66,6 +78,19 @@ export default function SettingsPage() {
       setUser(user as UserProfile)
       setFullName(user.user_metadata?.full_name || '')
       
+      // Fetch user database record
+      const { data: userDbData, error: userDbError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+      
+      if (userDbError) {
+        console.error('Error fetching user database record:', userDbError)
+      } else {
+        setUserDbRecord(userDbData)
+      }
+      
       // Load user preferences (this would come from a user_preferences table in a real app)
       // For now, using localStorage as a fallback
       const savedPrefs = localStorage.getItem('user_preferences')
@@ -87,13 +112,22 @@ export default function SettingsPage() {
     try {
       const supabase = createClient()
       
-      const { error } = await supabase.auth.updateUser({
+      // Update auth user metadata
+      const { error: authError } = await supabase.auth.updateUser({
         data: {
           full_name: fullName
         }
       })
       
-      if (error) throw error
+      if (authError) throw authError
+      
+      // Update database record
+      const { error: dbError } = await supabase
+        .from('users')
+        .update({ full_name: fullName })
+        .eq('id', user.id)
+      
+      if (dbError) throw dbError
       
       toast.success('Profile updated successfully!')
     } catch (error) {
@@ -101,6 +135,15 @@ export default function SettingsPage() {
       toast.error('Failed to update profile')
     } finally {
       setSaving(false)
+    }
+  }
+  
+  const handleAvatarUpdate = (newAvatarUrl: string | null) => {
+    if (userDbRecord) {
+      setUserDbRecord({
+        ...userDbRecord,
+        avatar_url: newAvatarUrl
+      })
     }
   }
 
@@ -162,6 +205,18 @@ export default function SettingsPage() {
             </h2>
             
             <div className="space-y-4">
+              {/* Profile Picture Upload */}
+              {userDbRecord && (
+                <ProfilePictureUpload
+                  currentAvatarUrl={userDbRecord.avatar_url}
+                  userId={user.id}
+                  fullName={userDbRecord.full_name || fullName}
+                  onAvatarUpdate={handleAvatarUpdate}
+                />
+              )}
+              
+              <Separator />
+              
               <div>
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
