@@ -14,7 +14,12 @@ import {
   BarChart3, 
   Settings,
   ExternalLink,
-  Crown
+  Crown,
+  User,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Activity
 } from "lucide-react"
 import Link from "next/link"
 import { getSubdomain, getOrganizationFromSubdomain } from "@/lib/subdomain"
@@ -32,11 +37,26 @@ interface UserOrganization extends Organization {
   role: string
 }
 
+interface PersonalTicket {
+  id: string
+  subject: string
+  status: string
+  priority: string
+  created_at: string
+  organization_id: string
+  user_email: string
+  reference_id: string
+}
+
+type DashboardView = 'personal' | 'organization'
+
 export default function Dashboard() {
   const [organizations, setOrganizations] = useState<UserOrganization[]>([])
+  const [personalTickets, setPersonalTickets] = useState<PersonalTicket[]>([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [subdomain, setSubdomain] = useState<string | null>(null)
+  const [dashboardView, setDashboardView] = useState<DashboardView>('personal')
 
   useEffect(() => {
     // Detect subdomain on client side
@@ -88,6 +108,9 @@ export default function Dashboard() {
         })) || []
 
         setOrganizations(transformedOrgs)
+        
+        // Fetch personal tickets (tickets assigned to user)
+        await fetchPersonalTickets(user.id)
       } catch (error) {
         console.error('Fetch error:', error)
       } finally {
@@ -97,6 +120,25 @@ export default function Dashboard() {
 
     fetchUserAndOrganizations()
   }, [])
+
+  const fetchPersonalTickets = async (userId: string) => {
+    const supabase = createClient()
+    
+    try {
+      // Get tickets assigned to the user
+      const { data: tickets, error } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('assigned_to', userId)
+        .order('created_at', { ascending: false })
+        .limit(10)
+      
+      if (error) throw error
+      setPersonalTickets(tickets || [])
+    } catch (error) {
+      console.error('Error fetching personal tickets:', error)
+    }
+  }
 
   if (loading) {
     return (
@@ -111,23 +153,96 @@ export default function Dashboard() {
     return <OrganizationDashboard subdomain={subdomain} />
   }
 
-  // Otherwise, show the main dashboard with all organizations
-  return (
-    <div className="space-y-8">
-      {/* Welcome Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <h1 className="text-4xl font-bold mb-2">
-          Welcome back, {user?.user_metadata?.full_name || 'User'}!
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Manage your organizations and track your support operations
-        </p>
-      </motion.div>
+  // Personal Dashboard Component
+  const PersonalDashboard = () => {
+    const personalStats = {
+      assignedTickets: personalTickets.length,
+      openTickets: personalTickets.filter(t => ['open', 'new'].includes(t.status)).length,
+      pendingTickets: personalTickets.filter(t => t.status === 'pending').length,
+      completedTickets: personalTickets.filter(t => ['resolved', 'closed'].includes(t.status)).length,
+    }
 
+    return (
+      <div className="space-y-6">
+        {/* Personal Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            { label: "My Tickets", value: personalStats.assignedTickets, icon: Ticket, color: "from-blue-500 to-cyan-500" },
+            { label: "Open", value: personalStats.openTickets, icon: AlertTriangle, color: "from-orange-500 to-red-500" },
+            { label: "Pending", value: personalStats.pendingTickets, icon: Clock, color: "from-yellow-500 to-orange-500" },
+            { label: "Completed", value: personalStats.completedTickets, icon: CheckCircle, color: "from-green-500 to-emerald-500" },
+          ].map((stat) => (
+            <Card key={stat.label} className="p-6">
+              <div className="flex items-center space-x-3">
+                <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center text-white`}>
+                  <stat.icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-muted-foreground text-sm">{stat.label}</p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* My Recent Tickets */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">My Recent Tickets</h3>
+          {personalTickets.length === 0 ? (
+            <div className="text-center py-8">
+              <Ticket className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">No tickets assigned to you yet</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {personalTickets.slice(0, 5).map((ticket) => (
+                <div key={ticket.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h4 className="font-medium truncate">{ticket.subject}</h4>
+                      <Badge variant={ticket.status === 'resolved' ? 'default' : 'secondary'}>
+                        {ticket.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                      <span>#{ticket.reference_id}</span>
+                      <span>{ticket.user_email}</span>
+                      <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+
+        {/* Personal Quick Actions */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { title: "View All My Tickets", icon: Ticket, href: "/dashboard/tickets" },
+              { title: "My Performance", icon: Activity, href: "/dashboard/analytics" },
+              { title: "Team", icon: Users, href: "/dashboard/team" },
+              { title: "Settings", icon: Settings, href: "/dashboard/settings" },
+            ].map((action) => (
+              <Link key={action.title} href={action.href}>
+                <Card className="p-4 hover:scale-105 transition-transform cursor-pointer">
+                  <action.icon className="h-6 w-6 text-primary mb-2" />
+                  <p className="text-sm font-medium">{action.title}</p>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
+  // Organization Dashboard Component (existing content)
+  const OrganizationDashboard = () => (
+    <div className="space-y-8">
       {/* Quick Stats */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -290,6 +405,64 @@ export default function Dashboard() {
             </Card>
           ))}
         </div>
+      </motion.div>
+    </div>
+  )
+
+  // Otherwise, show the main dashboard with view selector
+  return (
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">
+              Welcome back, {user?.user_metadata?.full_name || 'User'}!
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              {dashboardView === 'personal' 
+                ? 'Track your assigned tickets and personal performance' 
+                : 'Manage your organizations and track your support operations'
+              }
+            </p>
+          </div>
+          
+          {/* View Selector */}
+          <div className="flex items-center space-x-2 bg-muted p-1 rounded-lg">
+            <Button
+              variant={dashboardView === 'personal' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setDashboardView('personal')}
+              className="flex items-center space-x-2"
+            >
+              <User className="h-4 w-4" />
+              <span>Personal</span>
+            </Button>
+            <Button
+              variant={dashboardView === 'organization' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setDashboardView('organization')}
+              className="flex items-center space-x-2"
+            >
+              <Building2 className="h-4 w-4" />
+              <span>Organizations</span>
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Dashboard Content */}
+      <motion.div
+        key={dashboardView}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {dashboardView === 'personal' ? <PersonalDashboard /> : <OrganizationDashboard />}
       </motion.div>
     </div>
   )
