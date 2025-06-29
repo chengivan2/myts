@@ -178,164 +178,163 @@ export function DashboardSidebar() {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="flex flex-col h-full">
-
-      {/* Organization Selector */}
-      {organizations.length > 0 && (
-        <div className="p-4 border-b border-border/50 w-full overflow-hidden">
-          <div className="space-y-2 w-full max-w-full">
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Current Organization</p>
-            <div className="space-y-1 w-full max-w-full">
-              {organizations.map((org) => (
-                <button
-                  key={org.id}
-                  onClick={() => setSelectedOrg(org)}
-                  className={cn(
-                    "w-full text-left p-3 rounded-lg transition-colors group overflow-hidden",
-                    selectedOrg?.id === org.id 
-                      ? "bg-primary/10 border border-primary/20" 
-                      : "hover:bg-muted/50"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
-                      {org.logo_url ? (
-                        <img
-                          src={org.logo_url}
-                          alt={`${org.name} logo`}
-                          className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
-                          {org.name.charAt(0).toUpperCase()}
-                        </div>
+        <div className="space-y-0">
+          {/* Organization Selector */}
+          {organizations.length > 0 && (
+            <div className="p-4 border-b border-border/50 w-full overflow-hidden">
+              <div className="space-y-2 w-full max-w-full">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Current Organization</p>
+                <div className="space-y-1 w-full max-w-full">
+                  {organizations.map((org) => (
+                    <button
+                      key={org.id}
+                      onClick={() => setSelectedOrg(org)}
+                      className={cn(
+                        "w-full text-left p-3 rounded-lg transition-colors group overflow-hidden",
+                        selectedOrg?.id === org.id 
+                          ? "bg-primary/10 border border-primary/20" 
+                          : "hover:bg-muted/50"
                       )}
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium truncate" title={org.name}>{org.name}</p>
-                        <p className="text-xs text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>
-                          {org.subdomain}.myticketingsysem.site
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
+                          {org.logo_url ? (
+                            <img
+                              src={org.logo_url}
+                              alt={`${org.name} logo`}
+                              className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                              {org.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium truncate" title={org.name}>{org.name}</p>
+                            <p className="text-xs text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>
+                              {org.subdomain}.myticketingsysem.site
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1 flex-shrink-0">
+                          {org.role === 'owner' && (
+                            <Crown className="h-3 w-3 text-yellow-500" />
+                          )}
+                          <Badge variant={org.role === 'owner' ? 'default' : 'secondary'} className="text-xs">
+                            {org.role}
+                          </Badge>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Organization Actions */}
+                <div className="flex space-x-2 pt-2 w-full">
+                  <Link href="/onboarding" className="flex-1 min-w-0">
+                    <Button variant="outline" size="sm" className="w-full text-xs">
+                      <Plus className="h-3 w-3 mr-1 flex-shrink-0" />
+                      <span className="truncate">New Org</span>
+                    </Button>
+                  </Link>
+                  {selectedOrg && selectedOrg.role === 'owner' && (
+                    <Link href={`/dashboard/profile?org=${selectedOrg.id}`} className="flex-1 min-w-0">
+                      <Button variant="outline" size="sm" className="w-full text-xs">
+                        <Settings className="h-3 w-3 mr-1 flex-shrink-0" />
+                        <span className="truncate">Manage</span>
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+                
+                {/* Create Ticket Button */}
+                <div className="pt-3">
+                  <Button 
+                    onClick={() => setIsCreateTicketOpen(true)}
+                    className="w-full text-sm"
+                    disabled={organizations.length === 0}
+                  >
+                    <Ticket className="h-4 w-4 mr-2" />
+                    Create Ticket
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Navigation */}
+          <nav className="p-4">
+            <div className="space-y-1">
+              {getNavigationItems(currentOrganization).map((item) => {
+                const isActive = pathname === item.href || 
+                  (item.href !== '/dashboard' && pathname.startsWith(item.href))
+                
+                return (
+                  <Link key={item.href} href={item.href}>
+                    <div
+                      className={cn(
+                        "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group",
+                        isActive
+                          ? "bg-primary/10 text-primary border border-primary/20"
+                          : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <item.icon className={cn(
+                        "h-5 w-5 transition-colors",
+                        isActive ? "text-primary" : "group-hover:text-foreground"
+                      )} />
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(
+                          "font-medium",
+                          isActive ? "text-primary" : "group-hover:text-foreground"
+                        )}>
+                          {item.label}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.description}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-1 flex-shrink-0">
-                      {org.role === 'owner' && (
-                        <Crown className="h-3 w-3 text-yellow-500" />
-                      )}
-                      <Badge variant={org.role === 'owner' ? 'default' : 'secondary'} className="text-xs">
-                        {org.role}
-                      </Badge>
-                    </div>
-                  </div>
-                </button>
-              ))}
+                  </Link>
+                )
+              })}
             </div>
-            
-            {/* Organization Actions */}
-            <div className="flex space-x-2 pt-2 w-full">
-              <Link href="/onboarding" className="flex-1 min-w-0">
-                <Button variant="outline" size="sm" className="w-full text-xs">
-                  <Plus className="h-3 w-3 mr-1 flex-shrink-0" />
-                  <span className="truncate">New Org</span>
-                </Button>
-              </Link>
-              {selectedOrg && selectedOrg.role === 'owner' && (
-                <Link href={`/dashboard/profile?org=${selectedOrg.id}`} className="flex-1 min-w-0">
-                  <Button variant="outline" size="sm" className="w-full text-xs">
-                    <Settings className="h-3 w-3 mr-1 flex-shrink-0" />
-                    <span className="truncate">Manage</span>
-                  </Button>
-                </Link>
-              )}
-            </div>
-            
-            {/* Create Ticket Button */}
-            <div className="pt-3">
-              <Button 
-                onClick={() => setIsCreateTicketOpen(true)}
-                className="w-full text-sm"
-                disabled={organizations.length === 0}
-              >
-                <Ticket className="h-4 w-4 mr-2" />
-                Create Ticket
-              </Button>
-            </div>
-          </div>
+          </nav>
         </div>
-      )}
-
-      {/* Navigation */}
-      <nav className="flex-1 p-4">
-        <div className="space-y-1">
-          {getNavigationItems(currentOrganization).map((item) => {
-            const isActive = pathname === item.href || 
-              (item.href !== '/dashboard' && pathname.startsWith(item.href))
-            
-            return (
-              <Link key={item.href} href={item.href}>
-                <div
-                  className={cn(
-                    "flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 group",
-                    isActive
-                      ? "bg-primary/10 text-primary border border-primary/20"
-                      : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <item.icon className={cn(
-                    "h-5 w-5 transition-colors",
-                    isActive ? "text-primary" : "group-hover:text-foreground"
-                  )} />
-                  <div className="flex-1 min-w-0">
-                    <p className={cn(
-                      "font-medium",
-                      isActive ? "text-primary" : "group-hover:text-foreground"
-                    )}>
-                      {item.label}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
-        </div>
-      </nav>
-
-          {/* User Section - At bottom of scrollable area */}
-          <div className="mt-auto p-4 border-t border-border/50">
-            <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/30">
-              {user?.user_metadata?.avatar_url ? (
-                <img
-                  src={user.user_metadata.avatar_url}
-                  alt="User avatar"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                  <UserCircle className="h-4 w-4 text-white" />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {user?.user_metadata?.full_name || user?.email || 'User'}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {user?.email}
-                </p>
+        
+        {/* User Section - Fixed at bottom */}
+        <div className="sticky bottom-0 p-4 border-t border-border/50 bg-card/80 backdrop-blur-sm">
+          <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/30">
+            {user?.user_metadata?.avatar_url ? (
+              <img
+                src={user.user_metadata.avatar_url}
+                alt="User avatar"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                <UserCircle className="h-4 w-4 text-white" />
               </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {user?.user_metadata?.full_name || user?.email || 'User'}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user?.email}
+              </p>
             </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="w-full mt-2 justify-start text-muted-foreground hover:text-foreground"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
           </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSignOut}
+            className="w-full mt-2 justify-start text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
         </div>
       </div>
     </div>
