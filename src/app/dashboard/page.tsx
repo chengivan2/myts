@@ -240,8 +240,8 @@ export default function Dashboard() {
     )
   }
 
-  // Organization Dashboard Component (existing content)
-  const OrganizationDashboard = () => (
+  // Organization Overview Component (local dashboard content)
+  const OrganizationOverview = () => (
     <div className="space-y-8">
       {/* Quick Stats */}
       <motion.div
@@ -462,7 +462,7 @@ export default function Dashboard() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {dashboardView === 'personal' ? <PersonalDashboard /> : <OrganizationDashboard />}
+        {dashboardView === 'personal' ? <PersonalDashboard /> : <OrganizationOverview />}
       </motion.div>
     </div>
   )
