@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { CategoryManagement } from '@/components/CategoryManagement';
+import { createClient } from '@/utils/supabase/server';
+import { CategoryManagement } from '@/components/dashboard/category-management';
 
 interface PageProps {
   params: Promise<{ orgId: string }>;
