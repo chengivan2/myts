@@ -31,10 +31,45 @@ const SectionPlaceholder = ({ title }: { title: string }) => (
 
 function Footer() {
   return (
-    <footer className="mesh-bg-blue glass-card p-10">
-      <div className="flex justify-between items-center">
-        <p className="text-xs text-foreground/50">© TicketFlow 2025</p>
-        <ThemeToggle />
+    <footer className="relative overflow-hidden">
+      {/* Background with ticket illustration */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+        style={{
+          backgroundImage: 'url(/myts-ticket-illustration.png)'
+        }}
+      />
+      
+      {/* Glass overlay */}
+      <div className="relative mesh-bg-blue glass-card p-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+          {/* Left: Logo and description */}
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center space-x-3">
+              <img
+                src="/myts-logo.png"
+                alt="MyTS Logo"
+                className="h-10 w-10"
+              />
+              <h3 className="text-xl font-bold">MyTS</h3>
+            </div>
+            <p className="text-sm text-foreground/70 max-w-sm">
+              Streamline your customer support with our powerful ticketing system. 
+              Manage tickets, track performance, and delight your customers.
+            </p>
+          </div>
+          
+          {/* Center: Links (optional - can add later) */}
+          <div className="hidden md:block">
+            {/* Space for future footer links */}
+          </div>
+          
+          {/* Right: Copyright and theme toggle */}
+          <div className="flex flex-col md:items-end space-y-2">
+            <ThemeToggle />
+            <p className="text-xs text-foreground/50">© MyTS 2025. All rights reserved.</p>
+          </div>
+        </div>
       </div>
     </footer>
   )

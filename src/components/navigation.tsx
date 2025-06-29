@@ -63,13 +63,13 @@ export function Navigation() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
           <Image
-            src="/logo.svg"
-            alt="Logo"
+            src="/myts-logo.png"
+            alt="MyTS Logo"
             width={32}
             height={32}
             className="h-8 w-8"
           />
-          <span className="font-bold text-lg">TicketFlow</span>
+          <span className="font-bold text-lg">MyTS</span>
         </Link>
 
         {/* Desktop Navigation */}

@@ -35,7 +35,7 @@ export default function DashboardLayout({
               <div className="flex items-center space-x-4">
                 <h1 className="text-2xl font-bold lg:hidden">
                   <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                    TicketFlow
+                    MyTS
                   </span>
                 </h1>
                 <span className="text-muted-foreground hidden lg:block">Dashboard</span>
