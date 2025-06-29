@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { createClient } from "@/utils/supabase/client"
+import { getSubdomain, getOrganizationFromSubdomain } from "@/lib/subdomain"
 import { 
   Home,
   Building2, 
@@ -30,47 +31,75 @@ interface Organization {
   role: string
 }
 
-const navigationItems = [
-  { 
-    href: "/dashboard", 
-    label: "Dashboard", 
-    icon: Home,
-    description: "Overview and stats"
-  },
-  { 
-    href: "/dashboard/tickets", 
-    label: "Tickets", 
-    icon: Ticket,
-    description: "Support requests"
-  },
-  { 
-    href: "/dashboard/team", 
-    label: "Team", 
-    icon: Users,
-    description: "Manage agents"
-  },
-  { 
-    href: "/dashboard/analytics", 
-    label: "Analytics", 
-    icon: BarChart3,
-    description: "Performance reports"
-  },
-  { 
-    href: "/dashboard/settings", 
-    label: "Settings", 
-    icon: Settings,
-    description: "Account preferences"
+// Base navigation items - will be modified based on context
+const getNavigationItems = (currentOrganization: Organization | null) => {
+  const baseItems = [
+    { 
+      href: "/dashboard", 
+      label: "Dashboard", 
+      icon: Home,
+      description: "Overview and stats"
+    },
+    { 
+      href: "/dashboard/tickets", 
+      label: "Tickets", 
+      icon: Ticket,
+      description: "Support requests"
+    },
+    { 
+      href: "/dashboard/team", 
+      label: "Team", 
+      icon: Users,
+      description: "Manage agents"
+    },
+    { 
+      href: "/dashboard/analytics", 
+      label: "Analytics", 
+      icon: BarChart3,
+      description: "Performance reports"
+    }
+  ]
+
+  // Add context-aware settings link
+  if (currentOrganization) {
+    // On organization subdomain - link to organization settings
+    baseItems.push({
+      href: `/dashboard/profile?org=${currentOrganization.id}`,
+      label: "Settings",
+      icon: Settings,
+      description: "Organization settings"
+    })
+  } else {
+    // On main dashboard - link to user settings
+    baseItems.push({
+      href: "/dashboard/settings",
+      label: "Settings",
+      icon: Settings,
+      description: "Account preferences"
+    })
   }
-]
+
+  return baseItems
+}
 
 export function DashboardSidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
   const [user, setUser] = useState<any>(null)
+  const [currentSubdomain, setCurrentSubdomain] = useState<string | null>(null)
+  const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null)
   const pathname = usePathname()
 
   useEffect(() => {
+    // Detect subdomain on client side
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname
+      const detectedSubdomain = getSubdomain(hostname)
+      const orgSubdomain = getOrganizationFromSubdomain(detectedSubdomain)
+      setCurrentSubdomain(orgSubdomain)
+    }
+
     const fetchData = async () => {
       const supabase = createClient()
       
@@ -98,14 +127,23 @@ export function DashboardSidebar() {
 
       setOrganizations(transformedOrgs)
       
-      // Set first org as selected by default
-      if (transformedOrgs.length > 0) {
-        setSelectedOrg(transformedOrgs[0])
+      // If we're on a subdomain, find and set the current organization
+      if (currentSubdomain) {
+        const currentOrg = transformedOrgs.find(org => org.subdomain === currentSubdomain)
+        if (currentOrg) {
+          setCurrentOrganization(currentOrg)
+          setSelectedOrg(currentOrg)
+        }
+      } else {
+        // Set first org as selected by default for main dashboard
+        if (transformedOrgs.length > 0) {
+          setSelectedOrg(transformedOrgs[0])
+        }
       }
     }
 
     fetchData()
-  }, [])
+  }, [currentSubdomain])
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -204,7 +242,7 @@ export function DashboardSidebar() {
       {/* Navigation */}
       <nav className="flex-1 p-4">
         <div className="space-y-1">
-          {navigationItems.map((item) => {
+          {getNavigationItems(currentOrganization).map((item) => {
             const isActive = pathname === item.href || 
               (item.href !== '/dashboard' && pathname.startsWith(item.href))
             
