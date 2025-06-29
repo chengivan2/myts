@@ -24,7 +24,7 @@ interface TicketData {
   status: string
   priority: string
   created_at: string
-  customer_email: string
+  user_email: string
   assigned_to?: string
 }
 
@@ -97,7 +97,7 @@ export default function TicketsPage() {
           status,
           priority,
           created_at,
-          customer_email,
+          user_email,
           assigned_to
         `)
         .eq('organization_id', orgId)
@@ -144,7 +144,7 @@ export default function TicketsPage() {
   const filteredTickets = tickets.filter(ticket => {
     const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          ticket.reference_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ticket.customer_email.toLowerCase().includes(searchTerm.toLowerCase())
+                         ticket.user_email.toLowerCase().includes(searchTerm.toLowerCase())
     
     const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter
     
@@ -250,7 +250,7 @@ export default function TicketsPage() {
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      From: {ticket.customer_email}
+                      From: {ticket.user_email}
                     </p>
                   </div>
                 </div>
