@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { createClient } from "@/utils/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,14 @@ interface Organization {
   logo_url?: string | null
 }
 
+interface TicketCategory {
+  id: string
+  name: string
+  description: string | null
+  color: string | null
+  is_active: boolean | null
+}
+
 interface CreateTicketModalProps {
   isOpen: boolean
   onClose: () => void
@@ -46,13 +54,16 @@ export function CreateTicketModal({
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(
     currentOrganization || (organizations.length > 0 ? organizations[0] : null)
   )
+  const [categories, setCategories] = useState<TicketCategory[]>([])
   const [formData, setFormData] = useState({
     subject: "",
     description: "",
     priority: "normal" as "low" | "normal" | "high" | "urgent" | "critical",
+    categoryId: "",
     userEmail: user?.email || ""
   })
   const [loading, setLoading] = useState(false)
+  const [loadingCategories, setLoadingCategories] = useState(false)
 
   const priorityOptions = [
     { value: "low", label: "Low", color: "bg-blue-500" },
@@ -61,6 +72,35 @@ export function CreateTicketModal({
     { value: "urgent", label: "Urgent", color: "bg-orange-500" },
     { value: "critical", label: "Critical", color: "bg-red-500" }
   ]
+
+  // Fetch categories when selected organization changes
+  useEffect(() => {
+    if (selectedOrg) {
+      fetchCategories(selectedOrg.id)
+    }
+  }, [selectedOrg])
+
+  const fetchCategories = async (orgId: string) => {
+    setLoadingCategories(true)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('ticket_categories')
+        .select('*')
+        .eq('organization_id', orgId)
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
+        .order('name', { ascending: true })
+      
+      if (error) throw error
+      setCategories(data || [])
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+      setCategories([])
+    } finally {
+      setLoadingCategories(false)
+    }
+  }
 
   const generateTicketReference = async (orgId: string) => {
     const supabase = createClient()
@@ -111,6 +151,7 @@ export function CreateTicketModal({
           reference_id: referenceId,
           status: 'new',
           source: 'portal',
+          category_id: formData.categoryId || null,
           assigned_to: user?.id // Auto-assign to current user
         })
         .select()
@@ -136,6 +177,7 @@ export function CreateTicketModal({
         subject: "",
         description: "",
         priority: "normal",
+        categoryId: "",
         userEmail: user?.email || ""
       })
       
@@ -280,6 +322,70 @@ export function CreateTicketModal({
                       required
                     />
                   </div>
+
+                  {/* Category Selection */}
+                  {selectedOrg && (
+                    <div className="space-y-3">
+                      <Label>Category</Label>
+                      {loadingCategories ? (
+                        <div className="flex items-center space-x-2 text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Loading categories...</span>
+                        </div>
+                      ) : categories.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, categoryId: "" })}
+                            className={`p-3 rounded-lg border transition-all text-left ${
+                              !formData.categoryId
+                                ? 'bg-primary/10 border-primary/20 text-primary'
+                                : 'border-border hover:bg-muted/50'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <div className="w-3 h-3 rounded-full bg-gray-400" />
+                              <span className="text-sm font-medium">General</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">No specific category</p>
+                          </button>
+                          {categories.map((category) => (
+                            <button
+                              key={category.id}
+                              type="button"
+                              onClick={() => setFormData({ ...formData, categoryId: category.id })}
+                              className={`p-3 rounded-lg border transition-all text-left ${
+                                formData.categoryId === category.id
+                                  ? 'bg-primary/10 border-primary/20 text-primary'
+                                  : 'border-border hover:bg-muted/50'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-2">
+                                <div 
+                                  className={`w-3 h-3 rounded-full`} 
+                                  style={{ backgroundColor: category.color || '#6B7280' }}
+                                />
+                                <span className="text-sm font-medium">{category.name}</span>
+                              </div>
+                              {category.description && (
+                                <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                          <div className="flex items-center space-x-2 text-muted-foreground">
+                            <AlertCircle className="h-4 w-4" />
+                            <span className="text-sm">No categories available</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Your organization hasn't set up any ticket categories yet.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Priority */}
                   <div className="space-y-3">
