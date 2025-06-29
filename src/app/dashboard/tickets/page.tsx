@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { CreateTicketModal } from "@/components/dashboard/create-ticket-modal"
 import { 
   Ticket, 
   Search, 
@@ -41,6 +42,8 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
+  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false)
+  const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
     fetchData()
@@ -53,6 +56,8 @@ export default function TicketsPage() {
       // Get user's organizations
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      
+      setUser(user)
 
       const { data: userOrgs } = await supabase
         .from('organization_members')
@@ -230,11 +235,34 @@ export default function TicketsPage() {
           <Card className="p-8 text-center">
             <Ticket className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No tickets found</h3>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-6">
               {tickets.length === 0 
                 ? "No tickets have been created yet." 
                 : "No tickets match your current filters."}
             </p>
+            {tickets.length === 0 && (
+              <>
+                <Button 
+                  size="lg"
+                  onClick={() => setIsCreateTicketOpen(true)}
+                  className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white shadow-lg border-none transition-all duration-300 relative overflow-hidden group"
+                >
+                  <Plus className="mr-2 h-5 w-5" />
+                  Create Your First Ticket
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                </Button>
+                <style jsx>{`
+                  @keyframes shimmer {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                  }
+                  @keyframes mirror-shimmer {
+                    0%, 90%, 100% { transform: translateX(-100%); opacity: 0; }
+                    5%, 85% { transform: translateX(100%); opacity: 0.3; }
+                  }
+                `}</style>
+              </>
+            )}
           </Card>
         ) : (
           filteredTickets.map((ticket) => (
@@ -280,6 +308,21 @@ export default function TicketsPage() {
           </p>
         </div>
       )}
+      
+      {/* Create Ticket Modal */}
+      <CreateTicketModal
+        isOpen={isCreateTicketOpen}
+        onClose={() => {
+          setIsCreateTicketOpen(false)
+          // Refresh tickets after creating
+          if (selectedOrg) {
+            fetchTickets(selectedOrg.id)
+          }
+        }}
+        organizations={organizations}
+        currentOrganization={selectedOrg}
+        user={user}
+      />
     </div>
   )
 }

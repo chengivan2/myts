@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
+import { CreateTicketModal } from "./create-ticket-modal"
 import { 
   Ticket, 
   Users, 
@@ -69,6 +70,7 @@ export function OrganizationDashboard({ subdomain }: OrganizationDashboardProps)
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false)
 
   useEffect(() => {
     const fetchOrganizationData = async () => {
@@ -291,13 +293,42 @@ export function OrganizationDashboard({ subdomain }: OrganizationDashboardProps)
               Start managing customer support by creating your first ticket
             </p>
             {isOwnerOrAdmin && (
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse"
-              >
-                <Plus className="mr-2 h-5 w-5" />
-                Create Your First Ticket
-              </Button>
+              <div className="relative">
+                <Button 
+                  size="lg" 
+                  onClick={() => setIsCreateTicketOpen(true)}
+                  className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
+                  style={{
+                    backgroundSize: '200% 200%',
+                    animation: 'shimmer-bg 5s ease-in-out infinite',
+                  }}
+                >
+                  <Plus className="mr-2 h-5 w-5" />
+                  Create Your First Ticket
+                  <div 
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 translate-x-[-100%]" 
+                    style={{
+                      animation: 'mirror-shimmer 5s infinite 2s'
+                    }}
+                  />
+                </Button>
+                <style jsx>{`
+                  @keyframes shimmer-bg {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                  }
+                  @keyframes mirror-shimmer {
+                    0%, 90%, 100% { 
+                      transform: translateX(-100%); 
+                      opacity: 0; 
+                    }
+                    10%, 80% { 
+                      transform: translateX(100%); 
+                      opacity: 0.3; 
+                    }
+                  }
+                `}</style>
+              </div>
             )}
           </Card>
         ) : (
@@ -395,6 +426,19 @@ export function OrganizationDashboard({ subdomain }: OrganizationDashboardProps)
           ))}
         </div>
       </motion.div>
+      
+      {/* Create Ticket Modal */}
+      <CreateTicketModal
+        isOpen={isCreateTicketOpen}
+        onClose={() => {
+          setIsCreateTicketOpen(false)
+          // Refresh tickets after creating
+          // Note: You might want to implement a fetchTickets function here
+        }}
+        organizations={[{ id: organization.id, name: organization.name, subdomain: organization.subdomain, role: userMembership.role }]}
+        currentOrganization={{ id: organization.id, name: organization.name, subdomain: organization.subdomain, role: userMembership.role }}
+        user={user}
+      />
     </div>
   )
 }
