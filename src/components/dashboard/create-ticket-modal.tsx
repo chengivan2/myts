@@ -110,7 +110,7 @@ export function CreateTicketModal({
           user_email: formData.userEmail,
           reference_id: referenceId,
           status: 'new',
-          source: 'dashboard',
+          source: 'portal',
           assigned_to: user?.id // Auto-assign to current user
         })
         .select()
