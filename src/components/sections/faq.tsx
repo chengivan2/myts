@@ -94,7 +94,7 @@ export function FAQ() {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <div className="glass-card transition-all duration-300 hover:shadow-lg">
+              <div className="glass-card w-full">
                 <button
                   onClick={() => toggleItem(index)}
                   className="w-full p-6 text-left flex items-center justify-between focus:outline-none"
