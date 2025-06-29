@@ -8,13 +8,10 @@ import Image from "next/image"
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen pt-32 pb-20 overflow-hidden">
+    <section className="relative min-h-screen pt-32 pb-20 overflow-hidden mirror-shine">
       {/* Background */}
       <div className="absolute inset-0 mesh-bg-blue" />
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-      
-      {/* Animated Lines */}
-      <div className="absolute top-0 left-0 w-full h-1 animated-line" />
       
       <div className="relative z-10 container mx-auto px-4 flex flex-col items-center text-center space-y-8">
         {/* Announcement */}

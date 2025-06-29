@@ -226,24 +226,50 @@
     grid-row: span 2;
   }
   
-  /* Animated gradient line */
-  .animated-line {
+  /* Mirror shine background effect */
+  .mirror-shine {
     position: relative;
+    overflow: hidden;
   }
   
-  .animated-line::before {
+  .mirror-shine::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #0000cd, #add8e6, transparent);
-    animation: line-move 3s linear infinite;
+    bottom: 0;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.1) 45%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.1) 55%,
+      transparent 70%
+    );
+    animation: mirror-shimmer 4s ease-in-out infinite;
+    pointer-events: none;
   }
   
-  @keyframes line-move {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+  .dark .mirror-shine::before {
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.05) 45%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.05) 55%,
+      transparent 70%
+    );
+  }
+  
+  @keyframes mirror-shimmer {
+    0%, 100% {
+      transform: translateX(-100%) translateY(-100%) rotate(45deg);
+      opacity: 0;
+    }
+    50% {
+      transform: translateX(100%) translateY(100%) rotate(45deg);
+      opacity: 1;
+    }
   }
 }
