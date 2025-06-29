@@ -1,42 +1,91 @@
-import { notFound, redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
+"use client"
+
+import { useEffect, useState } from 'react';
+import { useRouter, notFound } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 import { CategoryManagement } from '@/components/dashboard/category-management';
+import { toast } from 'sonner';
 
 interface PageProps {
-  params: Promise<{ orgId: string }>;
+  params: { orgId: string };
 }
 
-export default async function OrganizationSettingsPage({ params }: PageProps) {
-  const { orgId } = await params;
-  const supabase = await createClient();
+interface Organization {
+  id: string;
+  name: string;
+  subdomain: string;
+}
 
-  // Get current user
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    redirect('/auth/signin');
+export default function OrganizationSettingsPage({ params }: PageProps) {
+  const { orgId } = params;
+  const router = useRouter();
+  const [organization, setOrganization] = useState<Organization | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      try {
+        const supabase = createClient();
+        
+        // Get current user
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          router.push('/auth/signin');
+          return;
+        }
+
+        // Get organization details
+        const { data: orgData, error: orgError } = await supabase
+          .from('organizations')
+          .select('*')
+          .eq('id', orgId)
+          .single();
+
+        if (orgError || !orgData) {
+          notFound();
+          return;
+        }
+
+        setOrganization(orgData);
+
+        // Check if user is owner or admin of this organization
+        const { data: membership, error: membershipError } = await supabase
+          .from('organization_members')
+          .select('role')
+          .eq('organization_id', orgId)
+          .eq('user_id', user.id)
+          .single();
+
+        if (membershipError || !membership || !['owner', 'admin'].includes(membership.role)) {
+          toast.error('You do not have permission to access this page');
+          router.push('/dashboard');
+          return;
+        }
+
+        setHasAccess(true);
+      } catch (error) {
+        console.error('Error checking access:', error);
+        toast.error('Failed to verify access');
+        router.push('/dashboard');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAccess();
+  }, [orgId, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
-  // Get organization details
-  const { data: organization, error: orgError } = await supabase
-    .from('organizations')
-    .select('*')
-    .eq('id', orgId)
-    .single();
-
-  if (orgError || !organization) {
-    notFound();
-  }
-
-  // Check if user is owner or admin of this organization
-  const { data: membership } = await supabase
-    .from('organization_members')
-    .select('role')
-    .eq('organization_id', orgId)
-    .eq('user_id', user.id)
-    .single();
-
-  if (!membership || !['owner', 'admin'].includes(membership.role)) {
-    notFound();
+  if (!hasAccess || !organization) {
+    return null; // Will redirect or show error
   }
 
   return (
