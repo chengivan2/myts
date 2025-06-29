@@ -230,7 +230,7 @@ export default function Dashboard() {
               { title: "Settings", icon: Settings, href: "/dashboard/settings" },
             ].map((action) => (
               <Link key={action.title} href={action.href}>
-                <Card className="p-4 hover:scale-105 transition-transform cursor-pointer">
+                <Card className="p-4 hover-shine hover:scale-105 transition-transform cursor-pointer">
                   <action.icon className="h-6 w-6 text-primary mb-2" />
                   <p className="text-sm font-medium">{action.title}</p>
                 </Card>
@@ -314,7 +314,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.6, delay: 0.1 * index }}
               >
                 <Link href={`https://${org.subdomain}.myticketingsysem.site`} className="block">
-                  <Card className="p-6 glass-card group hover:scale-105 transition-transform cursor-pointer">
+                  <Card className="p-6 glass-card group hover-shine hover:scale-105 transition-transform cursor-pointer">
                     <div className="space-y-4">
                       {/* Organization Header */}
                       <div className="flex items-start justify-between">
@@ -383,7 +383,7 @@ export default function Dashboard() {
             { title: "Team Management", desc: "Add and manage agents", icon: Users, href: "#" },
             { title: "Analytics", desc: "View performance reports", icon: BarChart3, href: "#" },
           ].map((action) => (
-            <Card key={action.title} className="p-4 glass-card group hover:scale-105 transition-transform cursor-pointer">
+            <Card key={action.title} className="p-4 glass-card group hover-shine hover:scale-105 transition-transform cursor-pointer">
               <action.icon className="h-8 w-8 text-primary mb-3" />
               <h3 className="font-semibold mb-1">{action.title}</h3>
               <p className="text-sm text-muted-foreground">{action.desc}</p>

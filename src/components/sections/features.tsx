@@ -119,7 +119,7 @@ export function Features() {
               viewport={{ once: true }}
               className={`${feature.size}`}
             >
-              <Card className="bento-card h-full group cursor-pointer">
+              <Card className="bento-card h-full group cursor-pointer hover-shine">
                 <div className="h-full flex flex-col">
                   {/* Icon and Title */}
                   <div className="flex items-start space-x-4 mb-4">
@@ -135,11 +135,6 @@ export function Features() {
                   <p className="text-muted-foreground text-sm leading-relaxed flex-1">
                     {feature.description}
                   </p>
-                  
-                  {/* Hover Effect */}
-                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="h-1 w-full bg-gradient-to-r from-primary to-secondary rounded-full" />
-                  </div>
                 </div>
               </Card>
             </motion.div>

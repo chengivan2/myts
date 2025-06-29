@@ -93,7 +93,7 @@ export function Testimonials() {
               transition={{ duration: 0.6, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Card className="bento-card h-full group">
+              <Card className="bento-card h-full group hover-shine">
                 <div className="h-full flex flex-col">
                   {/* Quote Icon */}
                   <div className="mb-4">
@@ -123,11 +123,6 @@ export function Testimonials() {
                         {testimonial.role} at {testimonial.company}
                       </div>
                     </div>
-                  </div>
-
-                  {/* Hover Effect */}
-                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="h-1 w-full bg-gradient-to-r from-primary to-secondary rounded-full" />
                   </div>
                 </div>
               </Card>
