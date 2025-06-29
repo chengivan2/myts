@@ -16,8 +16,10 @@ import {
   Shield,
   Palette,
   Save,
-  LogOut
+  LogOut,
+  Tag
 } from "lucide-react"
+import { CategoryManagement } from "@/components/dashboard/category-management"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -302,6 +304,18 @@ export default function SettingsPage() {
                 Save Preferences
               </Button>
             </div>
+          </Card>
+
+          {/* Category Management */}
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4 flex items-center">
+              <Tag className="h-5 w-5 mr-2" />
+              Ticket Categories
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              Manage ticket categories for organizations where you have admin access
+            </p>
+            <CategoryManagement />
           </Card>
 
           {/* Appearance Settings */}
