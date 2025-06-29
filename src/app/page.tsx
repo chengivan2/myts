@@ -34,14 +34,17 @@ function Footer() {
     <footer className="relative overflow-hidden">
       {/* Background with ticket illustration */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
         style={{
           backgroundImage: 'url(/myts-ticket-illustration.png)'
         }}
       />
       
-      {/* Glass overlay */}
-      <div className="relative mesh-bg-blue glass-card p-10">
+      {/* Semi-transparent overlay for better readability */}
+      <div className="absolute inset-0 bg-background/40" />
+      
+      {/* Content */}
+      <div className="relative mesh-bg-blue/30 p-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
           {/* Left: Logo and description */}
           <div className="flex flex-col space-y-4">
