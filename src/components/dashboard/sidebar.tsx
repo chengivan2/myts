@@ -23,6 +23,7 @@ import {
   Crown,
   UserCircle
 } from "lucide-react"
+import { CreateTicketModal } from "./create-ticket-modal"
 
 interface Organization {
   id: string
@@ -90,6 +91,7 @@ export function DashboardSidebar() {
   const [user, setUser] = useState<any>(null)
   const [currentSubdomain, setCurrentSubdomain] = useState<string | null>(null)
   const [currentOrganization, setCurrentOrganization] = useState<Organization | null>(null)
+  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -245,6 +247,18 @@ export function DashboardSidebar() {
                 </Link>
               )}
             </div>
+            
+            {/* Create Ticket Button */}
+            <div className="pt-3">
+              <Button 
+                onClick={() => setIsCreateTicketOpen(true)}
+                className="w-full text-sm"
+                disabled={organizations.length === 0}
+              >
+                <Ticket className="h-4 w-4 mr-2" />
+                Create Ticket
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -370,6 +384,15 @@ export function DashboardSidebar() {
           </>
         )}
       </AnimatePresence>
+      
+      {/* Create Ticket Modal */}
+      <CreateTicketModal
+        isOpen={isCreateTicketOpen}
+        onClose={() => setIsCreateTicketOpen(false)}
+        organizations={organizations}
+        currentOrganization={currentOrganization}
+        user={user}
+      />
     </>
   )
 }
