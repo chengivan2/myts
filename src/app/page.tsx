@@ -36,7 +36,7 @@ function Footer() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
         style={{
-          backgroundImage: 'url(/myts-ticket-illustration.png)'
+          backgroundImage: 'url(/images/myts-ticket-illustration.png)'
         }}
       />
       

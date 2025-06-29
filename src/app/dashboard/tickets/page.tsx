@@ -182,7 +182,7 @@ export default function TicketsPage() {
       {organizations.length > 1 && (
         <div className="flex items-center space-x-4">
           <span className="text-sm font-medium">Organization:</span>
-          <select 
+          <select title="Select Organization" 
             value={selectedOrg?.id || ''}
             onChange={(e) => {
               const org = organizations.find(o => o.id === e.target.value)
@@ -214,7 +214,7 @@ export default function TicketsPage() {
         
         <div className="flex items-center space-x-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
-          <select 
+          <select title="Filter by Status" 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-3 py-1 border rounded-md"
