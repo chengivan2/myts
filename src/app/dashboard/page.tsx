@@ -313,81 +313,56 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
               >
-                <Card className="p-6 glass-card group hover:scale-105 transition-transform cursor-pointer">
-                  <div className="space-y-4">
-                    {/* Organization Header */}
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
-                        {org.logo_url ? (
-                          <img
-                            src={org.logo_url}
-                            alt={`${org.name} logo`}
-                            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
-                            {org.name.charAt(0).toUpperCase()}
+                <Link href={`https://${org.subdomain}.myticketingsysem.site`} className="block">
+                  <Card className="p-6 glass-card group hover:scale-105 transition-transform cursor-pointer">
+                    <div className="space-y-4">
+                      {/* Organization Header */}
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
+                          {org.logo_url ? (
+                            <img
+                              src={org.logo_url}
+                              alt={`${org.name} logo`}
+                              className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
+                              {org.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-lg truncate" title={org.name}>{org.name}</h3>
+                            <p className="text-sm text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>
+                              {org.subdomain}.myticketingsysem.site
+                            </p>
                           </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-semibold text-lg truncate" title={org.name}>{org.name}</h3>
-                          <p className="text-sm text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>
-                            {org.subdomain}.myticketingsysem.site
-                          </p>
+                        </div>
+                        
+                        {/* Role Badge */}
+                        <Badge variant={org.role === 'owner' ? 'default' : 'secondary'} className="flex-shrink-0">
+                          {org.role === 'owner' && <Crown className="w-3 h-3 mr-1" />}
+                          {org.role}
+                        </Badge>
+                      </div>
+
+                      {/* Stats Preview */}
+                      <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border/50">
+                        <div className="text-center">
+                          <p className="text-lg font-semibold">0</p>
+                          <p className="text-xs text-muted-foreground">Tickets</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-lg font-semibold">0</p>
+                          <p className="text-xs text-muted-foreground">Agents</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-lg font-semibold">0%</p>
+                          <p className="text-xs text-muted-foreground">Resolved</p>
                         </div>
                       </div>
-                      
-                      {/* Role Badge */}
-                      <Badge variant={org.role === 'owner' ? 'default' : 'secondary'} className="flex-shrink-0">
-                        {org.role === 'owner' && <Crown className="w-3 h-3 mr-1" />}
-                        {org.role}
-                      </Badge>
                     </div>
-
-                    {/* Quick Actions */}
-                    <div className="flex items-center space-x-2">
-                      {org.role === 'owner' ? (
-                        <Link href={`/dashboard/profile?org=${org.id}`} className="flex-1">
-                          <Button size="sm" variant="outline" className="w-full">
-                            <Settings className="w-4 h-4 mr-2" />
-                            Manage
-                          </Button>
-                        </Link>
-                      ) : (
-                        <Button size="sm" variant="outline" className="flex-1" disabled>
-                          <Settings className="w-4 h-4 mr-2" />
-                          View Only
-                        </Button>
-                      )}
-                      <Button size="sm" variant="outline" asChild>
-                        <a 
-                          href={`https://${org.subdomain}.myticketingsysem.site`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </Button>
-                    </div>
-
-                    {/* Stats Preview */}
-                    <div className="grid grid-cols-3 gap-2 pt-4 border-t border-border/50">
-                      <div className="text-center">
-                        <p className="text-lg font-semibold">0</p>
-                        <p className="text-xs text-muted-foreground">Tickets</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-lg font-semibold">0</p>
-                        <p className="text-xs text-muted-foreground">Agents</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-lg font-semibold">0%</p>
-                        <p className="text-xs text-muted-foreground">Resolved</p>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
           </div>
