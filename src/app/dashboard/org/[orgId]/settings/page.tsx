@@ -7,7 +7,7 @@ import { CategoryManagement } from '@/components/dashboard/category-management';
 import { toast } from 'sonner';
 
 interface PageProps {
-  params: { orgId: string };
+  params: Promise<{ orgId: string }>;
 }
 
 interface Organization {
@@ -17,13 +17,23 @@ interface Organization {
 }
 
 export default function OrganizationSettingsPage({ params }: PageProps) {
-  const { orgId } = params;
   const router = useRouter();
+  const [orgId, setOrgId] = useState<string | null>(null);
   const [organization, setOrganization] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
 
   useEffect(() => {
+    const initParams = async () => {
+      const resolvedParams = await params;
+      setOrgId(resolvedParams.orgId);
+    };
+    initParams();
+  }, [params]);
+
+  useEffect(() => {
+    if (!orgId) return;
+    
     const checkAccess = async () => {
       try {
         const supabase = createClient();
