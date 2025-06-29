@@ -1,17 +1,26 @@
-import type { Metadata } from "next";
-import { DashboardSidebar } from "@/components/dashboard/sidebar";
+"use client"
 
-export const metadata: Metadata = {
-  title: "Dashboard - TicketFlow",
-  description: "Manage your organizations, tickets, and team members with TicketFlow's comprehensive dashboard.",
-  robots: "noindex, nofollow", // Prevent indexing of private dashboard
-};
+import { useEffect, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import { DashboardSidebar } from "@/components/dashboard/sidebar";
+import { UserCircle } from "lucide-react";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    fetchUser()
+  }, [])
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -34,7 +43,17 @@ export default function DashboardLayout({
               
               <div className="flex items-center space-x-4">
                 {/* User menu would go here */}
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full"></div>
+                {user?.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt="User avatar"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                    <UserCircle className="h-4 w-4 text-white" />
+                  </div>
+                )}
               </div>
             </div>
           </div>

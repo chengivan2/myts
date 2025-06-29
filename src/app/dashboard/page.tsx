@@ -31,6 +31,7 @@ interface Organization {
   subdomain: string
   profile: any
   created_at: string
+  logo_url?: string | null
 }
 
 interface UserOrganization extends Organization {
@@ -91,7 +92,8 @@ export default function Dashboard() {
               name,
               subdomain,
               profile,
-              created_at
+              created_at,
+              logo_url
             )
           `)
           .eq('user_id', user.id)
@@ -316,9 +318,17 @@ export default function Dashboard() {
                     {/* Organization Header */}
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
-                          {org.name.charAt(0).toUpperCase()}
-                        </div>
+                        {org.logo_url ? (
+                          <img
+                            src={org.logo_url}
+                            alt={`${org.name} logo`}
+                            className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white font-bold flex-shrink-0">
+                            {org.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
                         <div className="min-w-0 flex-1">
                           <h3 className="font-semibold text-lg truncate" title={org.name}>{org.name}</h3>
                           <p className="text-sm text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>

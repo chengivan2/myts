@@ -29,6 +29,7 @@ interface Organization {
   name: string
   subdomain: string
   role: string
+  logo_url?: string | null
 }
 
 // Base navigation items - will be modified based on context
@@ -115,7 +116,8 @@ export function DashboardSidebar() {
           organizations (
             id,
             name,
-            subdomain
+            subdomain,
+            logo_url
           )
         `)
         .eq('user_id', user?.id || '')
@@ -195,9 +197,17 @@ export function DashboardSidebar() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
-                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
-                        {org.name.charAt(0).toUpperCase()}
-                      </div>
+                      {org.logo_url ? (
+                        <img
+                          src={org.logo_url}
+                          alt={`${org.name} logo`}
+                          className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+                          {org.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                       <div className="min-w-0 flex-1">
                         <p className="font-medium truncate" title={org.name}>{org.name}</p>
                         <p className="text-xs text-muted-foreground truncate" title={`${org.subdomain}.myticketingsysem.site`}>
@@ -281,9 +291,17 @@ export function DashboardSidebar() {
           {/* User Section - At bottom of scrollable area */}
           <div className="mt-auto p-4 border-t border-border/50">
             <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/30">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
-                <UserCircle className="h-4 w-4 text-white" />
-              </div>
+              {user?.user_metadata?.avatar_url ? (
+                <img
+                  src={user.user_metadata.avatar_url}
+                  alt="User avatar"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                  <UserCircle className="h-4 w-4 text-white" />
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
                   {user?.user_metadata?.full_name || user?.email || 'User'}
