@@ -32,6 +32,7 @@ interface TicketData {
 interface Organization {
   id: string
   name: string
+  subdomain: string
   role: string
 }
 
@@ -65,7 +66,8 @@ export default function TicketsPage() {
           role,
           organizations (
             id,
-            name
+            name,
+            subdomain
           )
         `)
         .eq('user_id', user.id)
