@@ -20,7 +20,7 @@ export function CTA() {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10 rounded-3xl" />
           
           {/* Content */}
-          <div className="relative glass-card p-12 rounded-3xl text-center mirror-shine">
+          <div className="relative glass-card p-12 rounded-2xl text-center mirror-shine">
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
