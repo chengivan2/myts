@@ -280,12 +280,6 @@ export function OrganizationDashboard({ subdomain }: OrganizationDashboardProps)
               <Filter className="h-4 w-4 mr-2" />
               Filter
             </Button>
-            {isOwnerOrAdmin && (
-              <Button size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                New Ticket
-              </Button>
-            )}
           </div>
         </div>
 
@@ -297,9 +291,12 @@ export function OrganizationDashboard({ subdomain }: OrganizationDashboardProps)
               Start managing customer support by creating your first ticket
             </p>
             {isOwnerOrAdmin && (
-              <Button>
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse"
+              >
                 <Plus className="mr-2 h-5 w-5" />
-                Create First Ticket
+                Create Your First Ticket
               </Button>
             )}
           </Card>

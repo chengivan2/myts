@@ -20,7 +20,7 @@ import {
 interface TicketData {
   id: string
   reference_id: string
-  title: string
+  subject: string
   status: string
   priority: string
   created_at: string
@@ -93,7 +93,7 @@ export default function TicketsPage() {
         .select(`
           id,
           reference_id,
-          title,
+          subject,
           status,
           priority,
           created_at,
@@ -142,7 +142,7 @@ export default function TicketsPage() {
   }
 
   const filteredTickets = tickets.filter(ticket => {
-    const matchesSearch = ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          ticket.reference_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          ticket.customer_email.toLowerCase().includes(searchTerm.toLowerCase())
     
@@ -172,10 +172,6 @@ export default function TicketsPage() {
             Manage support tickets for {selectedOrg?.name || 'your organization'}
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Ticket
-        </Button>
       </div>
 
       {/* Organization Selector */}
@@ -248,7 +244,7 @@ export default function TicketsPage() {
                   {getStatusIcon(ticket.status)}
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold">{ticket.title}</h3>
+                      <h3 className="font-semibold">{ticket.subject}</h3>
                       <Badge variant="outline" className="text-xs">
                         #{ticket.reference_id}
                       </Badge>
