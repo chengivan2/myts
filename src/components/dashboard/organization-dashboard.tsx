@@ -230,10 +230,12 @@ export function OrganizationDashboard({ subdomain }: OrganizationDashboardProps)
         
         {isOwnerOrAdmin && (
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
-            </Button>
+            <Link href={`/org/${organization.subdomain}/settings`}>
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
+            </Link>
           </div>
         )}
       </motion.div>
@@ -415,7 +417,7 @@ export function OrganizationDashboard({ subdomain }: OrganizationDashboardProps)
             { title: "Analytics", desc: "View performance reports", icon: BarChart3, href: "#" },
             ...(isOwnerOrAdmin ? [
               { title: "Team Management", desc: "Add and manage team members", icon: Users, href: "#" },
-              { title: "Settings", desc: "Organization configuration", icon: Settings, href: "#" },
+              { title: "Settings", desc: "Organization configuration", icon: Settings, href: `/org/${organization.subdomain}/settings` },
             ] : [])
           ].map((action) => (
             <Card key={action.title} className="p-4 glass-card group hover:scale-105 transition-transform cursor-pointer">

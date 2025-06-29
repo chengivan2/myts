@@ -313,7 +313,7 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
               >
-                <Link href={`https://${org.subdomain}.myticketingsysem.site`} className="block">
+                <Link href={`https://${org.subdomain}.myticketingsysem.site`} className="block" target="_blank" rel="noopener noreferrer">
                   <Card className="p-6 glass-card group hover-shine hover:scale-105 transition-transform cursor-pointer">
                     <div className="space-y-4">
                       {/* Organization Header */}
