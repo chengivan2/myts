@@ -304,35 +304,37 @@ export function CategoryManagement({ organizationId, onCategoriesUpdate }: Categ
               <button
                 key={org.id}
                 onClick={() => setSelectedOrgId(org.id)}
-                className={`p-3 rounded-lg border transition-all text-left ${
+                className={`p-4 rounded-lg border transition-all text-left h-full min-h-[80px] w-full ${
                   selectedOrgId === org.id
                     ? 'bg-primary/10 border-primary/20 ring-2 ring-primary/20'
                     : 'border-border hover:bg-muted/50'
                 }`}
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex items-start space-x-3 h-full">
                   {org.logo_url ? (
                     <img
                       src={org.logo_url}
                       alt={`${org.name} logo`}
-                      className="w-8 h-8 rounded-lg object-cover"
+                      className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium">
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
                       {org.name.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <p className="font-medium">{org.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center flex-wrap gap-1 mb-1">
+                      <p className="font-medium text-sm truncate">{org.name}</p>
                       {org.role === 'owner' && (
-                        <Crown className="h-3 w-3 text-yellow-500" />
+                        <Crown className="h-3 w-3 text-yellow-500 flex-shrink-0" />
                       )}
+                    </div>
+                    <div className="mb-2">
                       <Badge variant={org.role === 'owner' ? 'default' : 'secondary'} className="text-xs">
                         {org.role}
                       </Badge>
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground break-all">
                       {org.subdomain}.myticketingsysem.site
                     </p>
                   </div>
