@@ -51,9 +51,7 @@ export function CreateTicketModal({
   currentOrganization,
   user 
 }: CreateTicketModalProps) {
-  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(
-    currentOrganization || (organizations.length > 0 ? organizations[0] : null)
-  )
+  const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null)
   const [categories, setCategories] = useState<TicketCategory[]>([])
   const [formData, setFormData] = useState({
     subject: "",
@@ -72,6 +70,17 @@ export function CreateTicketModal({
     { value: "urgent", label: "Urgent", color: "bg-orange-500" },
     { value: "critical", label: "Critical", color: "bg-red-500" }
   ]
+
+  // Initialize selectedOrg when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      if (currentOrganization) {
+        setSelectedOrg(currentOrganization)
+      } else if (organizations.length > 0) {
+        setSelectedOrg(organizations[0])
+      }
+    }
+  }, [isOpen, currentOrganization, organizations])
 
   // Fetch categories when selected organization changes
   useEffect(() => {
