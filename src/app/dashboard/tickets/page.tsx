@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   XCircle
 } from "lucide-react"
+import Link from "next/link"
 
 interface TicketData {
   id: string
@@ -268,36 +269,38 @@ export default function TicketsPage() {
           </Card>
         ) : (
           filteredTickets.map((ticket) => (
-            <Card key={ticket.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  {getStatusIcon(ticket.status)}
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold">{ticket.subject}</h3>
-                      <Badge variant="outline" className="text-xs">
-                        #{ticket.reference_id}
-                      </Badge>
+            <Link key={ticket.id} href={`/dashboard/tickets/${ticket.id}`}>
+              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    {getStatusIcon(ticket.status)}
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-semibold">{ticket.subject}</h3>
+                        <Badge variant="outline" className="text-xs">
+                          #{ticket.reference_id}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        From: {ticket.user_email}
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      From: {ticket.user_email}
-                    </p>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3">
+                    <Badge className={`text-xs ${getPriorityColor(ticket.priority)}`}>
+                      {ticket.priority}
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      {ticket.status.replace('_', ' ')}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(ticket.created_at).toLocaleDateString()}
+                    </span>
                   </div>
                 </div>
-                
-                <div className="flex items-center space-x-3">
-                  <Badge className={`text-xs ${getPriorityColor(ticket.priority)}`}>
-                    {ticket.priority}
-                  </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    {ticket.status.replace('_', ' ')}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(ticket.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           ))
         )}
       </div>
