@@ -21,7 +21,8 @@ import {
   X,
   LogOut,
   Crown,
-  UserCircle
+  UserCircle,
+  Tag
 } from "lucide-react"
 import { CreateTicketModal } from "./create-ticket-modal"
 
@@ -34,7 +35,7 @@ interface Organization {
 }
 
 // Base navigation items - will be modified based on context
-const getNavigationItems = (currentOrganization: Organization | null) => {
+const getNavigationItems = (currentOrganization: Organization | null, userRole: string = '') => {
   const baseItems = [
     { 
       href: "/dashboard", 
@@ -61,6 +62,16 @@ const getNavigationItems = (currentOrganization: Organization | null) => {
       description: "Performance reports"
     }
   ]
+
+  // Add category management for admins and owners
+  if (['owner', 'admin'].includes(userRole)) {
+    baseItems.splice(2, 0, {
+      href: "/dashboard/categories",
+      label: "Categories",
+      icon: Tag,
+      description: "Organize tickets"
+    })
+  }
 
   // Add context-aware settings link
   if (currentOrganization) {
@@ -265,7 +276,7 @@ export function DashboardSidebar() {
           {/* Navigation */}
           <nav className="p-4">
             <div className="space-y-1">
-              {getNavigationItems(currentOrganization).map((item) => {
+              {getNavigationItems(currentOrganization, selectedOrg?.role).map((item) => {
                 const isActive = pathname === item.href || 
                   (item.href !== '/dashboard' && pathname.startsWith(item.href))
                 
