@@ -2,15 +2,19 @@
 
 import { useParams } from "next/navigation"
 
-export default function TicketPage() {
+export default function TicketDetailPage() {
   const params = useParams()
   
   return (
     <div className="p-8">
-      <h1>Ticket Page</h1>
-      <p>Ticket ID: {params.id}</p>
-      <p>This is working if you can see this!</p>
-      <pre>{JSON.stringify(params, null, 2)}</pre>
+      <h1 className="text-3xl font-bold">It Works! 🎉</h1>
+      <div className="mt-4 space-y-2">
+        <p>Ticket ID: <strong>{params.id}</strong></p>
+        <p>Dynamic routing is working correctly!</p>
+        <div className="mt-4 p-4 bg-gray-100 rounded">
+          <pre>{JSON.stringify(params, null, 2)}</pre>
+        </div>
+      </div>
     </div>
   )
 }
