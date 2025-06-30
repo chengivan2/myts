@@ -50,11 +50,15 @@ interface TicketTimelineProps {
   currentUser: any
 }
 
+type TimelineItem = 
+  | (TicketResponse & { type: 'response' })
+  | (TicketActivity & { type: 'activity' })
+
 export function TicketTimeline({ ticket, responses, activities, userRole, currentUser }: TicketTimelineProps) {
   // Combine and sort all timeline items
-  const timelineItems = [
-    ...responses.map(response => ({ ...response, type: 'response' })),
-    ...activities.map(activity => ({ ...activity, type: 'activity' }))
+  const timelineItems: TimelineItem[] = [
+    ...responses.map(response => ({ ...response, type: 'response' as const })),
+    ...activities.map(activity => ({ ...activity, type: 'activity' as const }))
   ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
 
   const getActivityIcon = (activityType: string) => {
