@@ -75,7 +75,7 @@ export function CreateTicketModal({
     { value: "critical", label: "Critical", color: "bg-red-500" }
   ]
 
-  // Initialize selectedOrg when modal opens
+  // Initialize selectedOrg and user email when modal opens
   useEffect(() => {
     if (isOpen) {
       if (currentOrganization) {
@@ -83,8 +83,16 @@ export function CreateTicketModal({
       } else if (organizations.length > 0) {
         setSelectedOrg(organizations[0])
       }
+      
+      // Set user email if not already set
+      if (user?.email && !formData.userEmail) {
+        setFormData(prev => ({
+          ...prev,
+          userEmail: user.email
+        }))
+      }
     }
-  }, [isOpen, currentOrganization, organizations])
+  }, [isOpen, currentOrganization, organizations, user])
 
   // Fetch categories when selected organization changes
   useEffect(() => {
