@@ -244,64 +244,53 @@ export default function TicketsPage() {
                 : "No tickets match your current filters."}
             </p>
             {tickets.length === 0 && (
-              <>
-                <Button 
-                  size="lg"
-                  onClick={() => setIsCreateTicketOpen(true)}
-                  className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white shadow-lg border-none transition-all duration-300 relative overflow-hidden group"
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Create Your First Ticket
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                </Button>
-                <style jsx>{`
-                  @keyframes shimmer {
-                    0%, 100% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                  }
-                  @keyframes mirror-shimmer {
-                    0%, 90%, 100% { transform: translateX(-100%); opacity: 0; }
-                    5%, 85% { transform: translateX(100%); opacity: 0.3; }
-                  }
-                `}</style>
-              </>
+              <Button 
+                size="lg"
+                onClick={() => setIsCreateTicketOpen(true)}
+                className="bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white shadow-lg border-none transition-all duration-300"
+              >
+                <Plus className="mr-2 h-5 w-5" />
+                Create Your First Ticket
+              </Button>
             )}
           </Card>
         ) : (
-          filteredTickets.map((ticket) => (
-            <Link key={ticket.id} href={`/dashboard/tickets/${ticket.id}`}>
-              <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    {getStatusIcon(ticket.status)}
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-semibold">{ticket.subject}</h3>
-                        <Badge variant="outline" className="text-xs">
-                          #{ticket.reference_id}
-                        </Badge>
+          <div className="space-y-3">
+            {filteredTickets.map((ticket) => (
+              <Link key={ticket.id} href={`/dashboard/tickets/${ticket.id}`}>
+                <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      {getStatusIcon(ticket.status)}
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-semibold">{ticket.subject}</h3>
+                          <Badge variant="outline" className="text-xs">
+                            #{ticket.reference_id}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          From: {ticket.user_email}
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        From: {ticket.user_email}
-                      </p>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <Badge className={`text-xs ${getPriorityColor(ticket.priority)}`}>
+                        {ticket.priority}
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        {ticket.status.replace('_', ' ')}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(ticket.created_at).toLocaleDateString()}
+                      </span>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-3">
-                    <Badge className={`text-xs ${getPriorityColor(ticket.priority)}`}>
-                      {ticket.priority}
-                    </Badge>
-                    <Badge variant="secondary" className="text-xs">
-                      {ticket.status.replace('_', ' ')}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(ticket.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-          ))
+                </Card>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
 

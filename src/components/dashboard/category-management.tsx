@@ -389,18 +389,46 @@ export function CategoryManagement({ organizationId, onCategoriesUpdate }: Categ
               
               <div className="space-y-2">
                 <Label>Color</Label>
-                <div className="flex items-center space-x-2">
-                  {colorOptions.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, color })}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${
-                        formData.color === color ? 'border-foreground scale-110' : 'border-border'
-                      }`}
-                      style={{ backgroundColor: color }}
+                <div className="space-y-3">
+                  {/* Preset Colors */}
+                  <div className="flex items-center space-x-2">
+                    {colorOptions.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, color })}
+                        className={`w-6 h-6 rounded-full border-2 transition-all ${
+                          formData.color === color ? 'border-foreground scale-110' : 'border-border'
+                        }`}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Custom Color Input */}
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                      className="w-8 h-8 rounded border cursor-pointer"
+                      title="Choose custom color"
                     />
-                  ))}
+                    <input
+                      type="text"
+                      value={formData.color}
+                      onChange={(e) => {
+                        const color = e.target.value
+                        if (/^#[0-9A-F]{6}$/i.test(color) || color === '') {
+                          setFormData({ ...formData, color })
+                        }
+                      }}
+                      placeholder="#000000"
+                      className="px-2 py-1 text-sm border rounded w-20"
+                      maxLength={7}
+                    />
+                    <span className="text-xs text-muted-foreground">Custom hex color</span>
+                  </div>
                 </div>
               </div>
             </div>
