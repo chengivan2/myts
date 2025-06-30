@@ -255,7 +255,7 @@ export default function TicketsPage() {
             )}
           </Card>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-4">
             {filteredTickets.map((ticket) => (
               <Link key={ticket.id} href={`/dashboard/tickets/${ticket.id}`}>
                 <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
