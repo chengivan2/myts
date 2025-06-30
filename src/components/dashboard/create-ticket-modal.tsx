@@ -17,7 +17,9 @@ import {
   Crown, 
   Loader2,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  ChevronDown,
+  Search
 } from "lucide-react"
 
 interface Organization {
@@ -62,6 +64,8 @@ export function CreateTicketModal({
   })
   const [loading, setLoading] = useState(false)
   const [loadingCategories, setLoadingCategories] = useState(false)
+  const [categorySearchTerm, setCategorySearchTerm] = useState("")
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
 
   const priorityOptions = [
     { value: "low", label: "Low", color: "bg-blue-500" },
@@ -88,6 +92,22 @@ export function CreateTicketModal({
       fetchCategories(selectedOrg.id)
     }
   }, [selectedOrg])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showCategoryDropdown) {
+        const target = event.target as Element
+        if (!target.closest('.category-dropdown-container')) {
+          setShowCategoryDropdown(false)
+          setCategorySearchTerm("")
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showCategoryDropdown])
 
   const fetchCategories = async (orgId: string) => {
     setLoadingCategories(true)
@@ -334,63 +354,144 @@ export function CreateTicketModal({
 
                   {/* Category Selection */}
                   {selectedOrg && (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <Label>Category</Label>
                       {loadingCategories ? (
-                        <div className="flex items-center space-x-2 text-muted-foreground">
+                        <div className="flex items-center space-x-2 text-muted-foreground p-3 border rounded-lg">
                           <Loader2 className="h-4 w-4 animate-spin" />
                           <span>Loading categories...</span>
                         </div>
-                      ) : categories.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      ) : (
+                        <div className="relative category-dropdown-container">
+                          {/* Dropdown trigger */}
                           <button
                             type="button"
-                            onClick={() => setFormData({ ...formData, categoryId: "" })}
-                            className={`p-3 rounded-lg border transition-all text-left ${
-                              !formData.categoryId
-                                ? 'bg-primary/10 border-primary/20 text-primary'
-                                : 'border-border hover:bg-muted/50'
-                            }`}
+                            onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+                            className="w-full p-3 border rounded-lg text-left flex items-center justify-between hover:bg-muted/50 transition-colors"
                           >
                             <div className="flex items-center space-x-2">
-                              <div className="w-3 h-3 rounded-full bg-gray-400" />
-                              <span className="text-sm font-medium">General</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1">No specific category</p>
-                          </button>
-                          {categories.map((category) => (
-                            <button
-                              key={category.id}
-                              type="button"
-                              onClick={() => setFormData({ ...formData, categoryId: category.id })}
-                              className={`p-3 rounded-lg border transition-all text-left ${
-                                formData.categoryId === category.id
-                                  ? 'bg-primary/10 border-primary/20 text-primary'
-                                  : 'border-border hover:bg-muted/50'
-                              }`}
-                            >
-                              <div className="flex items-center space-x-2">
-                                <div 
-                                  className={`w-3 h-3 rounded-full`} 
-                                  style={{ backgroundColor: category.color || '#6B7280' }}
-                                />
-                                <span className="text-sm font-medium">{category.name}</span>
-                              </div>
-                              {category.description && (
-                                <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
+                              {formData.categoryId ? (
+                                (() => {
+                                  const selectedCategory = categories.find(c => c.id === formData.categoryId)
+                                  return selectedCategory ? (
+                                    <>
+                                      <div 
+                                        className="w-3 h-3 rounded-full" 
+                                        style={{ backgroundColor: selectedCategory.color || '#6B7280' }}
+                                      />
+                                      <span className="text-sm font-medium">{selectedCategory.name}</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="w-3 h-3 rounded-full bg-gray-400" />
+                                      <span className="text-sm font-medium">General</span>
+                                    </>
+                                  )
+                                })()
+                              ) : (
+                                <>
+                                  <div className="w-3 h-3 rounded-full bg-gray-400" />
+                                  <span className="text-sm font-medium text-muted-foreground">Select a category</span>
+                                </>
                               )}
-                            </button>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="p-3 rounded-lg bg-muted/50 border border-border">
-                          <div className="flex items-center space-x-2 text-muted-foreground">
-                            <AlertCircle className="h-4 w-4" />
-                            <span className="text-sm">No categories available</span>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Your organization hasn't set up any ticket categories yet.
-                          </p>
+                            </div>
+                            <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${
+                              showCategoryDropdown ? 'rotate-180' : ''
+                            }`} />
+                          </button>
+                          
+                          {/* Dropdown content */}
+                          {showCategoryDropdown && (
+                            <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-background border rounded-lg shadow-lg max-h-64 overflow-hidden">
+                              {/* Search input */}
+                              <div className="p-2 border-b">
+                                <div className="relative">
+                                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                  <Input
+                                    placeholder="Search categories..."
+                                    value={categorySearchTerm}
+                                    onChange={(e) => setCategorySearchTerm(e.target.value)}
+                                    className="pl-9 text-sm"
+                                  />
+                                </div>
+                              </div>
+                              
+                              {/* Category options */}
+                              <div className="max-h-48 overflow-y-auto">
+                                {/* General option */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFormData({ ...formData, categoryId: "" })
+                                    setShowCategoryDropdown(false)
+                                    setCategorySearchTerm("")
+                                  }}
+                                  className={`w-full p-3 text-left hover:bg-muted/50 transition-colors border-b ${
+                                    !formData.categoryId ? 'bg-primary/10 text-primary' : ''
+                                  }`}
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 rounded-full bg-gray-400" />
+                                    <span className="text-sm font-medium">General</span>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-1">No specific category</p>
+                                </button>
+                                
+                                {/* Filtered categories */}
+                                {categories
+                                  .filter(category => 
+                                    category.name.toLowerCase().includes(categorySearchTerm.toLowerCase()) ||
+                                    (category.description && category.description.toLowerCase().includes(categorySearchTerm.toLowerCase()))
+                                  )
+                                  .map((category) => (
+                                    <button
+                                      key={category.id}
+                                      type="button"
+                                      onClick={() => {
+                                        setFormData({ ...formData, categoryId: category.id })
+                                        setShowCategoryDropdown(false)
+                                        setCategorySearchTerm("")
+                                      }}
+                                      className={`w-full p-3 text-left hover:bg-muted/50 transition-colors border-b last:border-b-0 ${
+                                        formData.categoryId === category.id ? 'bg-primary/10 text-primary' : ''
+                                      }`}
+                                    >
+                                      <div className="flex items-center space-x-2">
+                                        <div 
+                                          className="w-3 h-3 rounded-full" 
+                                          style={{ backgroundColor: category.color || '#6B7280' }}
+                                        />
+                                        <span className="text-sm font-medium">{category.name}</span>
+                                      </div>
+                                      {category.description && (
+                                        <p className="text-xs text-muted-foreground mt-1">{category.description}</p>
+                                      )}
+                                    </button>
+                                  ))
+                                }
+                                
+                                {/* No results message */}
+                                {categorySearchTerm && categories.filter(category => 
+                                  category.name.toLowerCase().includes(categorySearchTerm.toLowerCase()) ||
+                                  (category.description && category.description.toLowerCase().includes(categorySearchTerm.toLowerCase()))
+                                ).length === 0 && (
+                                  <div className="p-3 text-center text-muted-foreground">
+                                    <p className="text-sm">No categories found</p>
+                                    <p className="text-xs">Try a different search term</p>
+                                  </div>
+                                )}
+                                
+                                {/* No categories available */}
+                                {categories.length === 0 && (
+                                  <div className="p-3 text-center text-muted-foreground">
+                                    <AlertCircle className="h-4 w-4 mx-auto mb-2" />
+                                    <p className="text-sm">No categories available</p>
+                                    <p className="text-xs">Your organization hasn't set up any ticket categories yet.</p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

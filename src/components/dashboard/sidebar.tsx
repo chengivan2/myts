@@ -251,7 +251,7 @@ export function DashboardSidebar() {
                 <div className="pt-3">
                   <Button 
                     onClick={() => setIsCreateTicketOpen(true)}
-                    className="w-full text-sm"
+                    className="cursor-pointer w-full text-sm"
                     disabled={organizations.length === 0}
                   >
                     <Ticket className="h-4 w-4 mr-2" />
