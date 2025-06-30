@@ -163,8 +163,15 @@ export function CreateTicketModal({
       return
     }
 
-    if (!formData.subject.trim() || !formData.description.trim()) {
+    if (!formData.subject.trim() || !formData.description.trim() || !formData.userEmail.trim()) {
       toast.error('Please fill in all required fields')
+      return
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.userEmail)) {
+      toast.error('Please enter a valid email address')
       return
     }
 
@@ -531,17 +538,15 @@ export function CreateTicketModal({
 
                   {/* Customer Email */}
                   <div className="space-y-2">
-                    <Label htmlFor="userEmail">Customer Email</Label>
+                    <Label htmlFor="userEmail">Customer Email *</Label>
                     <Input
                       id="userEmail"
                       type="email"
                       value={formData.userEmail}
                       onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
                       placeholder="Customer email address"
+                      required
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Leave empty to use your email address
-                    </p>
                   </div>
 
                   {/* Actions */}
