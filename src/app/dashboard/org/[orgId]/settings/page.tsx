@@ -115,7 +115,7 @@ export default function OrganizationSettingsPage({ params }: PageProps) {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Category Management
             </h2>
-            <CategoryManagement organizationId={orgId} />
+            <CategoryManagement organizationId={orgId ?? ''} />
           </div>
         </div>
       </div>
