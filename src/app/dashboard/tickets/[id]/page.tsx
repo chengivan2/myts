@@ -98,7 +98,7 @@ export default function TicketDetailPage() {
   
   console.log('TicketDetailPage rendered with params:', params)
   console.log('Ticket ID:', ticketId)
-
+  
   const [ticket, setTicket] = useState<TicketDetail | null>(null)
   const [responses, setResponses] = useState<TicketResponse[]>([])
   const [activities, setActivities] = useState<TicketActivity[]>([])
