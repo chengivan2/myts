@@ -95,6 +95,9 @@ export default function TicketDetailPage() {
   const params = useParams()
   const router = useRouter()
   const ticketId = params.id as string
+  
+  console.log('TicketDetailPage rendered with params:', params)
+  console.log('Ticket ID:', ticketId)
 
   const [ticket, setTicket] = useState<TicketDetail | null>(null)
   const [responses, setResponses] = useState<TicketResponse[]>([])
