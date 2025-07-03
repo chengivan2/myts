@@ -12,11 +12,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "MyTSys - Modern Multi-Tenant Ticketing System",
   description: "Streamline customer support with our enterprise-grade, multi-tenant ticketing system. Built for modern organizations with advanced analytics, role-based access, and seamless integrations.",
-  keywords: ["ticketing system", "customer support", "multi-tenant", "enterprise", "help desk"],
-  authors: [{ name: "MyTSys Team" }],
   openGraph: {
     title: "MyTSys - Modern Solutions for Customer Engagement",
-    description: "Highly customizable components for building modern customer support experiences.",
+    description: "Modern solution for streamlining customer support in your organization.",
     type: "website",
   },
 };
