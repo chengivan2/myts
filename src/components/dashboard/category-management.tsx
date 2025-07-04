@@ -394,6 +394,7 @@ export function CategoryManagement({ organizationId, onCategoriesUpdate }: Categ
                   <div className="flex items-center space-x-2">
                     {colorOptions.map((color) => (
                       <button
+                        title="Pick a color"
                         key={color}
                         type="button"
                         onClick={() => setFormData({ ...formData, color })}
@@ -502,6 +503,7 @@ export function CategoryManagement({ organizationId, onCategoriesUpdate }: Categ
                       <div className="flex items-center space-x-2">
                         {colorOptions.map((color) => (
                           <button
+                            title="Pick a color"
                             key={color}
                             type="button"
                             onClick={() => setFormData({ ...formData, color })}
